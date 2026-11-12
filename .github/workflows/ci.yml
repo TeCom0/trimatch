@@ -1,0 +1,8 @@
+# CI is enabled once backend/pyproject.toml and tests exist (SPEC section 9, item 6).
+name: ci
+on: [push, pull_request]
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "No code yet"

@@ -1,0 +1,7 @@
+# Tolerances for three-way match (SPEC section 7). Placeholder values from the spec.
+price_tolerance_pct: 1.0
+qty_tolerance:
+  countable: 0        # units, packs, cartons
+  weight_pct: 2.0     # kg
+description_match_min_score: 90   # rapidfuzz
+min_field_confidence: 0.85

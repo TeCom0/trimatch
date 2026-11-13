@@ -1,6 +1,6 @@
 # trimatch: Phase 0 spec (vertical slice)
 
-Status: APPROVED v0.1, 2026-11-12. Source of truth for intent: PROJECT_BRIEF.md (v2). This file defines what Phase 0 builds and how it is judged. Changes go through docs/decisions.md.
+Status: APPROVED v0.2, 2026-11-13 (v0.1 2026-11-12; v0.2 = verified VAT, supplier 1 swapped to meat/fish/dairy). Source of truth for intent: PROJECT_BRIEF.md (v2). This file defines what Phase 0 builds and how it is judged. Changes go through docs/decisions.md.
 
 ## 1. Goal of the slice
 
@@ -47,38 +47,39 @@ All names are fictitious. ICEs are generated as valid 15-digit numbers (mod 97 c
 
 **Buyer:** *Riad Atlas Hospitality SARL*, Casablanca. A hotel-restaurant group with one warehouse (`WH`) in Odoo.
 
-| Supplier | Category | Units | VAT (to verify, see 4.1) |
+| Supplier | Category | Units | VAT (CGI 2026, see 4.1) |
 |---|---|---|---|
-| Primeurs Al Waha SARL | Fresh produce | kg, botte | exempt (expected) |
-| Distribution Boissons Anfa SARL | Beverages | pack, carton | 10% water, 20% other (expected) |
-| HygiPro Maroc SARL | Cleaning and hygiene | unit, carton, rouleau | 20% (expected) |
+| Boucherie-Marée Al Waha SARL | Fresh meat, fish, dairy | kg, carton | all exempt (art. 91-I-A-2°, 5°, 6°) |
+| Distribution Anfa SARL | Beverages and dry goods | pack, carton, sac, bidon | 20% drinks, 10% oil and rice (art. 99-B-1°) |
+| HygiPro Maroc SARL | Cleaning and hygiene | carton, bidon, rouleau | 20%; household bar soap exempt (art. 91-I-A-10°) |
 
-**Products (15):**
-- Produce: tomates (kg), pommes de terre (kg), oignons (kg), oranges (kg), menthe (botte)
-- Beverages: eau minérale 1,5 L pack de 6; soda 33 cl carton de 24; jus d'orange 1 L carton de 12; eau gazeuse 1 L pack de 6; thé glacé 50 cl carton de 12
-- Cleaning: liquide vaisselle 5 L, eau de javel 5 L, savon liquide mains 5 L, essuie-mains papier carton de 6, sacs poubelle 100 L rouleau de 10
+**Products (15), with VAT:**
+- Boucherie-Marée: viande bovine (kg, exempt), poulet entier (kg, exempt), sardines fraîches (kg, exempt), merlan frais (kg, exempt), lait frais 1 L carton de 12 (exempt)
+- Anfa: eau minérale 1,5 L pack de 6 (20%), soda 33 cl carton de 24 (20%), jus d'orange 1 L carton de 12 (20%), huile de table 5 L bidon (10%), riz usiné sac de 5 kg (10%)
+- HygiPro: savon de ménage en pain carton de 24 (exempt), liquide vaisselle 5 L bidon (20%), eau de javel 5 L bidon (20%), essuie-mains papier carton de 6 (20%), sacs poubelle 100 L rouleau de 10 (20%)
+
+This gives every VAT case across the three invoices: exempt only (Boucherie-Marée), 10% + 20% (Anfa), exempt + 20% (HygiPro).
 
 **Purchase orders (5), all confirmed in Odoo:**
 
 | PO | Supplier | Scenario | Receipt in Odoo | Invoice | Expected decision |
 |---|---|---|---|---|---|
-| PO-001 | Primeurs | clean | full | = received qty, PO price | draft |
-| PO-002 | Primeurs | short delivery | partial (one line ~70%), BL shows the lower qty | bills the **ordered** qty | review: `QTY_EXCEEDS_RECEIVED` |
-| PO-003 | Boissons | clean | full | = received, PO price | draft |
-| PO-004 | Boissons | price change | full | one line +8% over PO price | review: `PRICE_OVER_TOLERANCE` |
+| PO-001 | Boucherie-Marée | clean | full | = received qty, PO price | draft |
+| PO-002 | Boucherie-Marée | short delivery | partial (one line ~70%), BL shows the lower qty | bills the **ordered** qty | review: `QTY_EXCEEDS_RECEIVED` |
+| PO-003 | Anfa | clean | full | = received, PO price | draft |
+| PO-004 | Anfa | price change | full | one line +8% over PO price | review: `PRICE_OVER_TOLERANCE` |
 | PO-005 | HygiPro | clean | full | = received, PO price | draft |
 
-Seeding is idempotent: `odoo/seed.py` creates the company, the Moroccan chart of accounts/taxes (`l10n_ma`, to confirm in Odoo 20), partners with ICE, products, POs, confirmed receipts, and the bot user with its API key.
+Seeding is idempotent: `odoo/seed.py` creates the company, the Moroccan chart (`l10n_ma`, present in Odoo 20 Community) plus a 0% exempt purchase tax (the chart has none) and only the 20% and 10% purchase taxes (the chart's 7% and 14% are obsolete since 2026), partners with ICE, products, POs, confirmed receipts, and the bot user with its API key.
 
-### 4.1 Facts still to verify against official text before the generator is written
+### 4.1 Verified facts (CGI 2026, read 2026-11-13)
 
-Research on 2026-11-12 used secondary sources only (tax.gov.ma blocks automated reads):
-- VAT: two rates from 1 Jan 2026, 20% and 10%, after 7% and 14% were folded in (LF 2024 reform). Sources conflict on sugar. **The item-level rates in the table above are unverified.** Rates live in `config/vat_rates.yaml`, so a correction needs no code change.
+Full quotes and page numbers: `docs/research/vat-cgi-2026.md`.
+- VAT rates in 2026: 20% (art. 99-A), 10% (art. 99-B), exempt (art. 91/92). Art. 247-XXXXI ends every 7%/14% transition at 10% or 20% on 1 Jan 2026. Rates live in `config/vat_rates.yaml`.
+- Fresh fruit and vegetables are not exempt in the CGI text, and their treatment for a wholesaler is unclear, so they are left out of the slice.
 - ICE: 15 digits (9 enterprise + 4 establishment + 2 control). The whole number is ≡ 0 mod 97 (python-stdnum).
-- Invoice mentions (CGI art. 145-III): supplier name, ICE, IF, RC, patente/TP, client name and ICE (B2B), number, date, goods description, qty, unit price, HT, VAT rate and amount, TTC, payment terms/method, exemption mention where relevant.
-- E-invoicing (art. 145-IX): no implementing text published as of late Sept 2026 per one source. Irrelevant to the slice; UBL is Phase 1.
-
-Action: Youness or I read the official CGI 2026 (PDF from tax.gov.ma, by hand) and record the result in `docs/research/`.
+- Invoice mentions (art. 145-III and VIII): seller identity, IF and taxe professionnelle number, seller ICE, date, buyer name, address and ICE, price, quantity and nature of goods, VAT shown separately (or the exemption mention for art. 91/92/94 operations), payment references and method.
+- E-invoicing (art. 145-IX): no implementing text published as of late Sept 2026 per one secondary source. Irrelevant to the slice; UBL is Phase 1.
 
 ## 5. Extraction schema
 
@@ -100,6 +101,7 @@ class Party(BaseModel):
     name: Field[str]
     ice: Field[str]           # 15 digits, normalised (no spaces)
     if_number: Field[str] | None
+    tp_number: Field[str] | None   # taxe professionnelle (art. 145-III-2°)
     rc: Field[str] | None
 
 class Line(BaseModel):
@@ -108,7 +110,8 @@ class Line(BaseModel):
     quantity: Field[Decimal]
     unit: Field[str] | None
     unit_price_ht: Field[Decimal] | None   # None on a BL without prices
-    vat_rate: Field[Decimal] | None        # 0, 10, 20 (percent)
+    vat_rate: Field[Decimal] | None        # 0 (exempt), 10, 20 (percent)
+    exemption_ref: Field[str] | None       # e.g. "art. 91-I-A-6°" on exempt lines
     line_total_ht: Field[Decimal] | None
 
 class VatBreakdown(BaseModel):
@@ -132,6 +135,7 @@ class Invoice(BaseModel):
     number: Field[str]
     date: Field[date]
     due_date: Field[date] | None
+    payment_terms: Field[str] | None   # art. 145-III-7°
     po_ref: Field[str] | None
     bl_refs: list[Field[str]]
     currency: Literal["MAD"]
@@ -204,7 +208,7 @@ Gemini free-tier data may be used by Google. Only generated documents are ever s
 
 ## 9. Definition of done (all must hold)
 
-1. `docker compose up` + `uv run python odoo/seed.py` on a fresh clone gives the company, suppliers, products, 5 POs and receipts (PO-002 partial).
+1. The commands in `docs/plan-step1-odoo.md` (compose up, module install, `odoo shell` seed) on a fresh clone give the company, suppliers, products, 5 POs and receipts (PO-002 partial).
 2. `uv run python -m trimatch.generate --split e2e` produces the BL + invoice PDFs and degraded copies.
 3. `trimatch process data/synthetic/e2e/*` creates 3 draft bills (PO-001/003/005) with PDFs attached, and 2 review entries with the expected reason codes.
 4. Running it twice creates no duplicate drafts (idempotent on supplier + invoice number).

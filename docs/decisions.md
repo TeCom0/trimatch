@@ -13,3 +13,10 @@ Format: date · decision · why · alternatives rejected. Newest first.
 - **No FastAPI or UI in the slice.** Package + CLI; API arrives with the review screen in Phase 1.
 - **Short delivery and price change pulled into the slice** (brief had them in Phase 1). Without a mismatch the three-way match can't fail, so the demo proves nothing. Duplicate invoice stays in Phase 1.
 - **VAT rates in config, not code.** Item-level rates unverified (secondary sources conflict, tax.gov.ma not machine-readable); must be checked against CGI 2026 by hand.
+
+## 2026-11-13
+- **VAT verified against CGI 2026** (docs/research/vat-cgi-2026.md): only 20%, 10% and exempt in 2026. Odoo 20's `l10n_ma` 7%/14% taxes are obsolete and not used.
+- **Supplier 1 swapped from fresh fruit/veg to meat, fish and dairy.** The CGI exempts meat, fish and milk explicitly (art. 91-I-A), but has no exemption for fresh fruit/veg sold by a wholesaler, so their treatment is unclear. Result: every rate in the demo cites an article, and the three invoices cover exempt-only, 10%+20%, and exempt+20%.
+- **Schema adds `tp_number`, `payment_terms`, `exemption_ref`** to cover art. 145-III mentions.
+- **Seed runs inside the container via `odoo shell`, not over the API** (step 1 plan approved). The seed creates the bot's API key so it can't authenticate with it; the ORM gives idempotency and receipt validation. The pipeline still uses JSON-2 only.
+- **PostgreSQL 16** (Odoo 20 `MIN_PG_VERSION = 16`, read from source).

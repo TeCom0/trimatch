@@ -1,3 +1,3 @@
-# Moroccan VAT rates (percent). UNVERIFIED item mapping: check CGI 2026 by hand (SPEC 4.1).
-# Secondary sources (2026-11-12): two rates from 2026-01-01, 20 and 10; 7 and 14 folded in.
-rates: [0, 10, 20]   # 0 = exempt
+# Moroccan VAT rates in force from 2026-01-01 (CGI 2026, art. 99 and art. 247-XXXXI).
+# Verified 2026-11-13 against the CGI 2026 text; see docs/research/vat-cgi-2026.md.
+rates: [0, 10, 20]   # 0 = exempt (art. 91 / 92); no 7% or 14% in 2026

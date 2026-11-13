@@ -29,15 +29,22 @@ class OdooError(RuntimeError):
 
 
 def load_dotenv(path: Path = REPO_ROOT / ".env") -> None:
-    """Minimal .env reader (KEY=VALUE lines). Existing environment variables win."""
+    """Minimal .env reader (KEY=VALUE lines). Existing environment variables win.
+
+    If a key appears twice in the file, the last line wins (a pasted new key at the
+    bottom must replace the old one, not be ignored).
+    """
     if not path.is_file():
         return
-    for raw in path.read_text(encoding="utf-8").splitlines():
+    values: dict[str, str] = {}
+    for raw in path.read_text(encoding="utf-8-sig").splitlines():
         line = raw.strip()
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, value = line.split("=", 1)
-        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+        values[key.strip()] = value.strip().strip('"').strip("'")
+    for key, value in values.items():
+        os.environ.setdefault(key, value)
 
 
 class OdooClient:

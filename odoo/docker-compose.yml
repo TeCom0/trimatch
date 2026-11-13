@@ -1,0 +1,47 @@
+# Local Odoo 20 Community for the trimatch slice. Usage: odoo/README.md.
+# Ports are bound to 127.0.0.1 only: this is a demo with a fake company, not a server.
+name: trimatch
+
+services:
+  db:
+    image: postgres:16   # Odoo 20 refuses PostgreSQL < 16 (odoo/release.py MIN_PG_VERSION)
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  odoo:
+    image: odoo:20.0-20261112   # pinned dated tag (pulled 2026-11-13)
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # libpq reads these, so the image entrypoint adds no --db_* flags. That keeps
+      # `odoo db init ...` working (its subcommand parser rejects trailing --db_* flags).
+      PGHOST: db
+      PGPORT: "5432"
+      PGUSER: odoo
+      PGPASSWORD: odoo
+      # Master password for the (disabled) database manager. Random per start unless set.
+      ODOO_ADMIN_PASSWD: ${ODOO_ADMIN_PASSWD:-}
+      ODOO_RC: /tmp/odoo.conf
+    entrypoint: ["/bin/bash", "/mnt/trimatch/odoo/entrypoint.sh"]
+    command: ["odoo"]
+    ports:
+      - "127.0.0.1:8069:8069"
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - ..:/mnt/trimatch:ro
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  odoo-data:

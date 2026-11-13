@@ -37,16 +37,19 @@ odoo/
   seed_data.yaml       # company, suppliers, products, POs, receipts (the data from SPEC section 4)
 ```
 
-Commands (PowerShell, from repo root):
+Commands (from repo root; as built and tested 2026-11-13, see odoo/README.md):
 
 ```powershell
 docker compose -f odoo/docker-compose.yml up -d db
+docker compose -f odoo/docker-compose.yml run --rm odoo odoo db init trimatch --country MA
 docker compose -f odoo/docker-compose.yml run --rm odoo odoo -d trimatch -i purchase_stock,l10n_ma --stop-after-init
-Get-Content odoo/seed.py | docker compose -f odoo/docker-compose.yml run --rm -T odoo odoo shell -d trimatch --no-http
+docker compose -f odoo/docker-compose.yml run --rm odoo bash -c "odoo shell -d trimatch --no-http < /mnt/trimatch/odoo/seed.py"
 docker compose -f odoo/docker-compose.yml up -d odoo
 ```
 
-The seed prints the bot's API key **only when it creates it**. You paste it into `.env` (`ODOO_API_KEY`). Re-running the seed changes nothing and prints "key already exists". `--rotate-key` makes a new one.
+Two changes from the approved draft, found while building: (1) `db init --country MA` first, because `account` picks the generic chart when the company has no country at install time (`addons/account/models/ir_module.py`); (2) the seed is read from the mounted repo instead of piped with `Get-Content`, because PowerShell prepended a BOM that Python rejected.
+
+The seed prints the bot's API key **only when it creates it**. You paste it into `.env` (`ODOO_API_KEY`). Re-running the seed changes nothing and prints "key already exists". `TRIMATCH_ROTATE_KEY=1` makes a new one.
 
 ## What seed.py creates (from SPEC section 4)
 

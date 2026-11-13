@@ -20,3 +20,8 @@ Format: date · decision · why · alternatives rejected. Newest first.
 - **Schema adds `tp_number`, `payment_terms`, `exemption_ref`** to cover art. 145-III mentions.
 - **Seed runs inside the container via `odoo shell`, not over the API** (step 1 plan approved). The seed creates the bot's API key so it can't authenticate with it; the ORM gives idempotency and receipt validation. The pipeline still uses JSON-2 only.
 - **PostgreSQL 16** (Odoo 20 `MIN_PG_VERSION = 16`, read from source).
+- **Odoo image pinned to `odoo:20.0-20261112`** (newest dated 20.0 tag on Docker Hub on 2026-11-13).
+- **Database created with `odoo db init trimatch --country MA` before installing modules.** Without a country, `account` installs the generic chart and `l10n_ma` is not applied to the company. Found while building step 1.
+- **Seed reads `/mnt/trimatch/odoo/seed.py` inside the container** instead of `Get-Content | odoo shell`: PowerShell prepended a BOM that Python rejected. The repo is mounted read-only at `/mnt/trimatch`.
+- **IF stored in the partner's `vat` field (Odoo 20 identifier `MA_TIN`), ICE in `additional_identifiers.MA_ICE`.** Odoo 20 dropped `company_registry` and computes `is_company` from the VAT/TIN. RC and TP stay in `odoo/seed_data.yaml` for the generator only.
+- **Bot user groups: internal user, Purchase user, Billing.** Enough for reading POs/receipts over JSON-2; draft bill creation is tested in step 3.

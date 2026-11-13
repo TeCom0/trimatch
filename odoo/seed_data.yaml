@@ -1,0 +1,126 @@
+# Fake company for the Phase 0 slice (SPEC section 4). Every name and number here is fictitious.
+# ICEs: 15 digits = 9 enterprise ("999..." so they read as synthetic) + 4 establishment + 2 check
+# digits, valid under python-stdnum ma.ice (whole number mod 97 == 0).
+# IF/RC/TP numbers are made up. In Odoo 20 the ICE goes to additional_identifiers.MA_ICE and
+# the IF to the partner's vat field (MA_TIN); RC and TP have no field and only feed the generator.
+# Prices are MAD excl. VAT. VAT per product follows docs/research/vat-cgi-2026.md.
+# The document generator (build step 2) reads this file too, so the PDFs and Odoo stay in sync.
+
+company:
+  name: Riad Atlas Hospitality SARL
+  street: 27 Boulevard d'Anfa
+  city: Casablanca
+  zip: "20040"
+  ice: "999417302000177"
+  if_number: "53184207"
+  rc: "RC Casablanca 612447"
+  tp_number: "36218054"
+
+suppliers:
+  - key: alwaha
+    name: Boucherie-Marée Al Waha SARL
+    street: 14 Rue des Abattoirs, Hay Mohammadi
+    city: Casablanca
+    zip: "20300"
+    ice: "999528614000104"
+    if_number: "41927356"
+    rc: "RC Casablanca 538902"
+    tp_number: "35409716"
+    payment_terms: Paiement à 30 jours par virement
+  - key: anfa
+    name: Distribution Anfa SARL
+    street: Zone Industrielle Sidi Bernoussi, Lot 112
+    city: Casablanca
+    zip: "20600"
+    ice: "999639125000124"
+    if_number: "45071839"
+    rc: "RC Casablanca 574310"
+    tp_number: "35762048"
+    payment_terms: Paiement à 60 jours par chèque
+  - key: hygipro
+    name: HygiPro Maroc SARL
+    street: 8 Rue Ibn Battouta, Quartier Industriel
+    city: Mohammédia
+    zip: "28810"
+    ice: "999702846000146"
+    if_number: "48236591"
+    rc: "RC Mohammédia 29874"
+    tp_number: "39841527"
+    payment_terms: Paiement à 30 jours fin de mois par virement
+
+# Units of measure. "kg" is Odoo's own (uom.product_uom_kgm); the others are created by the seed.
+uoms: [carton, pack, sac, bidon, rouleau]
+
+# vat: 0 (exempt), 10 or 20, in percent. exemption_ref is printed on exempt invoice lines.
+products:
+  - {code: BMW-VB01, supplier: alwaha,  name: Viande bovine,                         uom: kg,      price: 98.00,  vat: 0,  exemption_ref: art. 91-I-A-6°}
+  - {code: BMW-PL01, supplier: alwaha,  name: Poulet entier,                         uom: kg,      price: 24.50,  vat: 0,  exemption_ref: art. 91-I-A-6°}
+  - {code: BMW-SA01, supplier: alwaha,  name: Sardines fraîches,                     uom: kg,      price: 16.00,  vat: 0,  exemption_ref: art. 91-I-A-5°}
+  - {code: BMW-ME01, supplier: alwaha,  name: Merlan frais,                          uom: kg,      price: 52.00,  vat: 0,  exemption_ref: art. 91-I-A-5°}
+  - {code: BMW-LT12, supplier: alwaha,  name: "Lait frais 1 L, carton de 12",        uom: carton,  price: 90.00,  vat: 0,  exemption_ref: art. 91-I-A-2°}
+  - {code: ANF-EM15, supplier: anfa,    name: "Eau minérale 1,5 L, pack de 6",       uom: pack,    price: 21.00,  vat: 20}
+  - {code: ANF-SD24, supplier: anfa,    name: "Soda 33 cl, carton de 24",            uom: carton,  price: 110.00, vat: 20}
+  - {code: ANF-JO12, supplier: anfa,    name: "Jus d'orange 1 L, carton de 12",      uom: carton,  price: 168.00, vat: 20}
+  - {code: ANF-HT05, supplier: anfa,    name: Huile de table 5 L,                    uom: bidon,   price: 92.00,  vat: 10}
+  - {code: ANF-RZ05, supplier: anfa,    name: "Riz usiné, sac de 5 kg",              uom: sac,     price: 55.00,  vat: 10}
+  - {code: HYG-SM24, supplier: hygipro, name: "Savon de ménage en pain, carton de 24", uom: carton, price: 86.40,  vat: 0,  exemption_ref: art. 91-I-A-10°}
+  - {code: HYG-LV05, supplier: hygipro, name: Liquide vaisselle 5 L,                 uom: bidon,   price: 48.00,  vat: 20}
+  - {code: HYG-JV05, supplier: hygipro, name: Eau de javel 5 L,                      uom: bidon,   price: 23.50,  vat: 20}
+  - {code: HYG-EM06, supplier: hygipro, name: "Essuie-mains papier, carton de 6",    uom: carton,  price: 66.00,  vat: 20}
+  - {code: HYG-SP10, supplier: hygipro, name: "Sacs poubelle 100 L, rouleau de 10",  uom: rouleau, price: 17.50,  vat: 20}
+
+# Purchase orders (SPEC section 4). Lines use the product's supplier price.
+# received: quantity validated on the Odoo receipt; omitted = full. A shortfall is closed
+# without a backorder, so Odoo's qty_received stays below the ordered qty.
+purchase_orders:
+  - name: PO-001
+    supplier: alwaha
+    scenario: clean
+    date_order: "2026-11-02"
+    lines:
+      - {product: BMW-VB01, qty: 25}
+      - {product: BMW-PL01, qty: 40}
+      - {product: BMW-SA01, qty: 30}
+      - {product: BMW-LT12, qty: 10}
+  - name: PO-002
+    supplier: alwaha
+    scenario: short_delivery
+    date_order: "2026-11-04"
+    lines:
+      - {product: BMW-VB01, qty: 30}
+      - {product: BMW-ME01, qty: 20, received: 14}
+      - {product: BMW-LT12, qty: 8}
+  - name: PO-003
+    supplier: anfa
+    scenario: clean
+    date_order: "2026-11-03"
+    lines:
+      - {product: ANF-EM15, qty: 50}
+      - {product: ANF-SD24, qty: 10}
+      - {product: ANF-JO12, qty: 8}
+      - {product: ANF-HT05, qty: 12}
+      - {product: ANF-RZ05, qty: 20}
+  - name: PO-004
+    supplier: anfa
+    scenario: price_change   # the generator bills ANF-HT05 at +8% over the PO price
+    date_order: "2026-11-05"
+    lines:
+      - {product: ANF-EM15, qty: 40}
+      - {product: ANF-SD24, qty: 12}
+      - {product: ANF-HT05, qty: 15}
+      - {product: ANF-RZ05, qty: 10}
+  - name: PO-005
+    supplier: hygipro
+    scenario: clean
+    date_order: "2026-11-06"
+    lines:
+      - {product: HYG-SM24, qty: 5}
+      - {product: HYG-LV05, qty: 10}
+      - {product: HYG-JV05, qty: 15}
+      - {product: HYG-EM06, qty: 8}
+      - {product: HYG-SP10, qty: 20}
+
+bot_user:
+  login: trimatch-bot
+  name: trimatch bot
+  api_key_name: trimatch pipeline

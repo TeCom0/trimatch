@@ -13,7 +13,8 @@ company:
   zip: "20040"
   ice: "999417302000177"
   if_number: "53184207"
-  rc: "RC Casablanca 612447"
+  rc: "612447"
+  rc_city: Casablanca
   tp_number: "36218054"
 
 suppliers:
@@ -24,9 +25,13 @@ suppliers:
     zip: "20300"
     ice: "999528614000104"
     if_number: "41927356"
-    rc: "RC Casablanca 538902"
+    rc: "538902"
+    rc_city: Casablanca
     tp_number: "35409716"
     payment_terms: Paiement à 30 jours par virement
+    payment_days: 30
+    end_of_month: false
+    doc_prefix: AW
   - key: anfa
     name: Distribution Anfa SARL
     street: Zone Industrielle Sidi Bernoussi, Lot 112
@@ -34,9 +39,13 @@ suppliers:
     zip: "20600"
     ice: "999639125000124"
     if_number: "45071839"
-    rc: "RC Casablanca 574310"
+    rc: "574310"
+    rc_city: Casablanca
     tp_number: "35762048"
     payment_terms: Paiement à 60 jours par chèque
+    payment_days: 60
+    end_of_month: false
+    doc_prefix: DA
   - key: hygipro
     name: HygiPro Maroc SARL
     street: 8 Rue Ibn Battouta, Quartier Industriel
@@ -44,9 +53,13 @@ suppliers:
     zip: "28810"
     ice: "999702846000146"
     if_number: "48236591"
-    rc: "RC Mohammédia 29874"
+    rc: "29874"
+    rc_city: Mohammédia
     tp_number: "39841527"
     payment_terms: Paiement à 30 jours fin de mois par virement
+    payment_days: 30
+    end_of_month: true
+    doc_prefix: HP
 
 # Units of measure. "kg" is Odoo's own (uom.product_uom_kgm); the others are created by the seed.
 uoms: [carton, pack, sac, bidon, rouleau]
@@ -102,7 +115,8 @@ purchase_orders:
       - {product: ANF-RZ05, qty: 20}
   - name: PO-004
     supplier: anfa
-    scenario: price_change   # the generator bills ANF-HT05 at +8% over the PO price
+    scenario: price_change
+    invoice_price_change: {product: ANF-HT05, pct: 8}   # generator bills this line +8% over PO price
     date_order: "2026-11-05"
     lines:
       - {product: ANF-EM15, qty: 40}

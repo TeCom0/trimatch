@@ -25,3 +25,6 @@ Format: date · decision · why · alternatives rejected. Newest first.
 - **Seed reads `/mnt/trimatch/odoo/seed.py` inside the container** instead of `Get-Content | odoo shell`: PowerShell prepended a BOM that Python rejected. The repo is mounted read-only at `/mnt/trimatch`.
 - **IF stored in the partner's `vat` field (Odoo 20 identifier `MA_TIN`), ICE in `additional_identifiers.MA_ICE`.** Odoo 20 dropped `company_registry` and computes `is_company` from the VAT/TIN. RC and TP stay in `odoo/seed_data.yaml` for the generator only.
 - **Bot user groups: internal user, Purchase user, Billing.** Enough for reading POs/receipts over JSON-2; draft bill creation is tested in step 3.
+- **Generator design (step 2 plan approved):** one French A4 HTML layout rendered with Playwright/Chromium; ground-truth boxes read from `data-field` elements after layout; degraded copies saved as JPEG 150 dpi q70; amount in words via num2words. Fonts Inter, Caveat (OFL) and Homemade Apple (Apache 2.0), bundled with licences.
+- **RC split into number + city in seed_data.yaml** (`rc: "538902"`, `rc_city: Casablanca`), so the RC ground truth is the number only.
+- **VAT breakdown includes an exempt row (rate 0, amount 0)** so Σ bases = total HT holds for VAT_MATH.

@@ -1,6 +1,6 @@
 # Build step 2: synthetic document generator (plan)
 
-Status: DRAFT, 2026-11-13, waiting for Youness's OK. Covers SPEC section 9, item 2, and the data side of section 8. Nothing else.
+Status: APPROVED 2026-11-13, built the same day. Covers SPEC section 9, item 2, and the data side of section 8. Nothing else.
 
 ## Goal
 

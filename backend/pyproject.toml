@@ -5,6 +5,15 @@ description = "Delivery note + invoice three-way match against Odoo, creating dr
 requires-python = ">=3.12"
 dependencies = [
     "httpx>=0.28",
+    "jinja2>=3.1.6",
+    "num2words>=0.5.14",
+    "opencv-python-headless>=5.0.0.93",
+    "pillow>=13.0.0",
+    "playwright>=1.65.1",
+    "pydantic>=2.14.3",
+    "pypdfium2>=5.15.2",
+    "python-stdnum>=2.2",
+    "pyyaml>=6.0.3",
 ]
 
 [build-system]
@@ -17,3 +26,9 @@ packages = ["trimatch"]
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "ruff>=0.17.5",
+]

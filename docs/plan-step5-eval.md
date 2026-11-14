@@ -1,6 +1,6 @@
 # Build step 5: eval script and first dated result (plan)
 
-Status: DRAFT, 2026-11-14, waiting for Youness's OK. Covers SPEC section 8 and section 9, item 5.
+Status: APPROVED 2026-11-14. Covers SPEC section 8 and section 9, item 5.
 
 ## What gets built
 

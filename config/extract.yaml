@@ -6,5 +6,5 @@ max_retries: 4
 # rpm = requests per minute, rpd = requests per day. The client stays at or under both.
 limits:
   gemini-3.8-flash: {rpm: 5, rpd: 20}          # read 2026-11-14
-  gemini-3.5-flash-lite: {rpm: 10, rpd: 100}   # NOT YET READ: conservative guess until checked
+  gemini-3.5-flash-lite: {rpm: 15, rpd: 500}   # read 2026-11-14 (TPM 250K)
 default_limits: {rpm: 5, rpd: 20}

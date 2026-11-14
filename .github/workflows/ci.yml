@@ -1,8 +1,24 @@
-# CI is enabled once backend/pyproject.toml and tests exist (SPEC section 9, item 6).
+# Lint + unit tests (SPEC 9, item 6). No Odoo and no Gemini in CI: the live Odoo tests
+# skip themselves, and Gemini parsing is tested on a recorded synthetic response.
 name: ci
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
+
 jobs:
-  placeholder:
+  test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
     steps:
-      - run: echo "No code yet"
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest -q

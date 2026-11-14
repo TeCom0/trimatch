@@ -28,3 +28,10 @@ Format: date · decision · why · alternatives rejected. Newest first.
 - **Generator design (step 2 plan approved):** one French A4 HTML layout rendered with Playwright/Chromium; ground-truth boxes read from `data-field` elements after layout; degraded copies saved as JPEG 150 dpi q70; amount in words via num2words. Fonts Inter, Caveat (OFL) and Homemade Apple (Apache 2.0), bundled with licences.
 - **RC split into number + city in seed_data.yaml** (`rc: "538902"`, `rc_city: Casablanca`), so the RC ground truth is the number only.
 - **VAT breakdown includes an exempt row (rate 0, amount 0)** so Σ bases = total HT holds for VAT_MATH.
+
+## 2026-11-14
+- **Step 3 plan approved.** Back half proven with a label (oracle) extractor before Gemini. Bills are made with Odoo's `purchase.order.action_create_invoice`, then aligned to the invoice line by line; the PDF is attached afterwards (passing it to that action triggers Odoo's own import of the file).
+- **New reason codes:** PO_SUPPLIER_MISMATCH, BL_MISSING, BILL_TOTAL_MISMATCH (Odoo totals vs invoice safety check; our own draft is deleted), plus ALREADY_DRAFTED as an idempotent skip. Added to SPEC 7.
+- **Billable quantity = qty_received − qty_invoiced** (drafts count as invoiced in Odoo 20), so the duplicate check runs before matching.
+- **Odoo client uses 127.0.0.1**, measured 21.8 s vs 1.3 s for 10 calls with "localhost" on Windows.
+- **Bot user rights unchanged** (internal user, Purchase user, Billing): enough to create draft bills from POs and attachments.

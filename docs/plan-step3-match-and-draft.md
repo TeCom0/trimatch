@@ -1,6 +1,6 @@
 # Build step 3: validate, match, decide, draft bill in Odoo (plan)
 
-Status: DRAFT, 2026-11-14, waiting for Youness's OK. Covers SPEC section 9, items 3 and 4, with ground-truth labels standing in for the extractor. Gemini extraction is step 4.
+Status: APPROVED 2026-11-14, built the same day. Covers SPEC section 9, items 3 and 4, with ground-truth labels standing in for the extractor. Gemini extraction is step 4.
 
 ## Why labels first
 

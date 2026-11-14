@@ -2,6 +2,12 @@
 
 Newest first. One entry per work session: date, what was done, what's next.
 
+## 2026-11-14
+- Build step 3 done (SPEC 9, items 3 and 4, with ground-truth labels as the extractor): validate.py, match.py, decide.py, pipeline.py, cli.py (`trimatch process`), adapter bill methods, odoo/reset_bills.py.
+- Run on Youness's PC against the seeded Odoo: PO-001/003/005 -> draft bills with invoice + BL PDFs attached, totals equal to the invoices, Odoo shows "PO Matching 100%"; PO-002 -> review QTY_EXCEEDS_RECEIVED; PO-004 -> review PRICE_OVER_TOLERANCE. Second run: ALREADY_DRAFTED x3, no new bills. Dry run on the 10 degraded e2e copies gives the same decisions. 38 unit tests + 2 live Odoo tests pass.
+- Found: Odoo 20 ir.attachment takes `raw`, not `datas`; "localhost" costs ~2 s per request on Windows (client now uses 127.0.0.1).
+- Next: step 4 plan, Gemini extraction (free tier, synthetic docs only); needs a Gemini API key in .env.
+
 ## 2026-11-13
 - Moroccan VAT verified against CGI 2026 (docs/research/vat-cgi-2026.md); config/vat_rates.yaml = 0/10/20.
 - SPEC v0.2 approved (supplier 1 = Boucherie-Marée Al Waha, schema adds tp_number/payment_terms/exemption_ref).

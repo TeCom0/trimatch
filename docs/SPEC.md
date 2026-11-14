@@ -179,6 +179,16 @@ Each rule returns `pass | fail` with a reason code.
 5. **Draft creation:** `account.move` with `move_type='in_invoice'`, linked to the PO lines so Odoo's own bill control applies. The `ref` is the supplier invoice number, the invoice date is set, and the PDF is attached as `ir.attachment`. State stays draft. The adapter has no method that posts.
 6. **Review queue (slice):** one JSON file per document in `data/review/` with extracted data, reason codes and the source file path. It becomes a DB table with the UI in Phase 1.
 
+Additional codes (added 2026-11-14 with the step 3 plan):
+
+| Code | Rule |
+|---|---|
+| `PO_SUPPLIER_MISMATCH` | the PO found in Odoo belongs to another supplier than the invoice's ICE |
+| `BL_MISSING` | an invoice arrived without its delivery note |
+| `BILL_TOTAL_MISMATCH` | after creating the draft, Odoo's untaxed/tax/total differ from the invoice by more than 0.01; the draft is deleted and the case goes to review |
+| `LOW_CONFIDENCE` | a required field is below `min_field_confidence` |
+| `ALREADY_DRAFTED` | skip, not review: a non-cancelled bill with the same supplier and ref exists (idempotency) |
+
 Tolerances live in `config/matching.yaml`.
 
 Odoo specifics to confirm in Odoo 20 during build: the exact way to create a bill from a PO through the API (`action_create_invoice` on `purchase.order` vs building the move with `purchase_line_id`), and the Community bill-control setting (`purchase_method` = received quantities).

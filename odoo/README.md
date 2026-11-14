@@ -31,6 +31,7 @@ It prints the company, the suppliers with ICE, and each PO line's ordered vs rec
 - Lost the key? Revoke it and print a new one:
   `docker compose -f odoo/docker-compose.yml run --rm -e TRIMATCH_ROTATE_KEY=1 odoo bash -c "odoo shell -d trimatch --no-http < /mnt/trimatch/odoo/seed.py"`
 - The bot's key has no expiration date and scope `rpc`. That is acceptable for a local demo with a fake company only.
+- Replay the bill demo: `docker compose -f odoo/docker-compose.yml run --rm odoo bash -c "odoo shell -d trimatch --no-http < /mnt/trimatch/odoo/reset_bills.py"` deletes the draft bills made by trimatch-bot (never posted ones).
 - Start over: `docker compose -f odoo/docker-compose.yml down -v` deletes both volumes.
 
 ## Security notes (local demo only)

@@ -193,8 +193,12 @@ def process_group(
             files = [inv_x.path] + ([bl_x.path] if bl_x else [])
             att_ids = client.attach("account.move", bill["id"], files)
             # Show the invoice (not the BL) in Odoo's document preview.
-            client.call("account.move", "write", ids=[bill["id"]],
-                        vals={"message_main_attachment_id": att_ids[0]})
+            client.call(
+                "account.move",
+                "write",
+                ids=[bill["id"]],
+                vals={"message_main_attachment_id": att_ids[0]},
+            )
             res.bill = bill
 
     if res.decision.action == "review" and not dry_run:

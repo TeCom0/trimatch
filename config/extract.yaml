@@ -1,0 +1,10 @@
+# Gemini extractor (plan-step4-gemini-extraction.md). Free tier only, synthetic documents only.
+model: gemini-3.5-flash-lite
+temperature: 0
+max_retries: 4
+# Free-tier limits of Youness's project, read in AI Studio (Dashboard > Rate limits).
+# rpm = requests per minute, rpd = requests per day. The client stays at or under both.
+limits:
+  gemini-3.8-flash: {rpm: 5, rpd: 20}          # read 2026-11-14
+  gemini-3.5-flash-lite: {rpm: 10, rpd: 100}   # NOT YET READ: conservative guess until checked
+default_limits: {rpm: 5, rpd: 20}

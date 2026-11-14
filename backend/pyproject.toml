@@ -4,6 +4,7 @@ version = "0.0.1"
 description = "Delivery note + invoice three-way match against Odoo, creating draft vendor bills"
 requires-python = ">=3.12"
 dependencies = [
+    "google-genai>=3.3.0",
     "httpx>=0.28",
     "jinja2>=3.1.6",
     "num2words>=0.5.14",

@@ -1,6 +1,6 @@
 # Build step 4: Gemini extraction (plan)
 
-Status: DRAFT, 2026-11-14, waiting for Youness's OK. Covers the extractor in SPEC section 2 ("Gemini Flash vision on the free tier, synthetic documents only") and makes SPEC 9 item 3 run with a real extractor. The eval script and reported numbers are step 5.
+Status: APPROVED 2026-11-14, built the same day. Covers the extractor in SPEC section 2 ("Gemini Flash vision on the free tier, synthetic documents only") and makes SPEC 9 item 3 run with a real extractor. The eval script and reported numbers are step 5.
 
 ## Facts that shape the plan (checked 2026-11-14)
 

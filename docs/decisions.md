@@ -35,3 +35,6 @@ Format: date · decision · why · alternatives rejected. Newest first.
 - **Billable quantity = qty_received − qty_invoiced** (drafts count as invoiced in Odoo 20), so the duplicate check runs before matching.
 - **Odoo client uses 127.0.0.1**, measured 21.8 s vs 1.3 s for 10 calls with "localhost" on Windows.
 - **Bot user rights unchanged** (internal user, Purchase user, Billing): enough to create draft bills from POs and attachments.
+- **Step 4 plan approved.** Default model gemini-3.5-flash-lite (larger free quota) for prompt work; gemini-3.8-flash (5 RPM / 20 RPD on Youness's project) kept for a final comparison. Model and limits in config/extract.yaml.
+- **Gemini copies values as printed; Python parses them** (French numbers, dates, ICE, "TVA 20 %", "Exonéré"). A value that is printed but unparseable gets confidence 0, so it can never reach a draft.
+- **Extractor refuses files outside data/synthetic/** (free-tier data may be used by Google).

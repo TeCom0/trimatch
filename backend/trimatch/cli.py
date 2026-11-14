@@ -9,9 +9,11 @@ import glob
 from pathlib import Path
 from typing import Annotated
 
+import httpx
 import typer
 
 from trimatch.extract import get_extractor
+from trimatch.extract.gemini import QuotaExhausted
 from trimatch.odoo_adapter import OdooClient
 from trimatch.pipeline import process as run_pipeline
 
@@ -47,9 +49,20 @@ def process(
 ) -> None:
     """Read BL + invoice documents, match them against Odoo, create draft bills or review entries."""
     paths = _expand(files)
-    results, lone_bls = run_pipeline(
-        paths, get_extractor(extractor), OdooClient.from_env(), dry_run=dry_run
-    )
+    try:
+        results, lone_bls = run_pipeline(
+            paths, get_extractor(extractor), OdooClient.from_env(), dry_run=dry_run
+        )
+    except httpx.ConnectError as exc:
+        typer.echo(
+            f"ERROR: Odoo is not reachable ({exc}). Is Docker running? "
+            "Start it with: docker compose -f odoo/docker-compose.yml up -d",
+            err=True,
+        )
+        raise typer.Exit(1) from exc
+    except QuotaExhausted as exc:
+        typer.echo(f"STOPPED: {exc}", err=True)
+        raise typer.Exit(2) from exc
     mode = " (dry run)" if dry_run else ""
     typer.echo(f"\n{len(paths)} files, {len(results)} invoices{mode}\n")
     typer.echo(f"{'PO':<8} {'invoice':<20} {'decision':<8} {'reasons / result'}")

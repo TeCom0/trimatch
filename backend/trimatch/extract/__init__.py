@@ -42,4 +42,8 @@ class LabelExtractor:
 def get_extractor(name: str) -> Extractor:
     if name == "labels":
         return LabelExtractor()
-    raise ValueError(f"unknown extractor {name!r} (available: labels)")
+    if name == "gemini":
+        from trimatch.extract.gemini import GeminiExtractor
+
+        return GeminiExtractor()
+    raise ValueError(f"unknown extractor {name!r} (available: labels, gemini)")

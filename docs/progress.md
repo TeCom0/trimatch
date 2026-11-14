@@ -6,7 +6,10 @@ Newest first. One entry per work session: date, what was done, what's next.
 - Build step 3 done (SPEC 9, items 3 and 4, with ground-truth labels as the extractor): validate.py, match.py, decide.py, pipeline.py, cli.py (`trimatch process`), adapter bill methods, odoo/reset_bills.py.
 - Run on Youness's PC against the seeded Odoo: PO-001/003/005 -> draft bills with invoice + BL PDFs attached, totals equal to the invoices, Odoo shows "PO Matching 100%"; PO-002 -> review QTY_EXCEEDS_RECEIVED; PO-004 -> review PRICE_OVER_TOLERANCE. Second run: ALREADY_DRAFTED x3, no new bills. Dry run on the 10 degraded e2e copies gives the same decisions. 38 unit tests + 2 live Odoo tests pass.
 - Found: Odoo 20 ir.attachment takes `raw`, not `datas`; "localhost" costs ~2 s per request on Windows (client now uses 127.0.0.1).
-- Next: step 4 plan, Gemini extraction (free tier, synthetic docs only); needs a Gemini API key in .env.
+- Step 4 (Gemini extraction) built: GeminiExtractor (structured JSON, values copied as printed and parsed in Python, boxes, self-reported confidence), disk cache, rate limit + daily budget, path guard (data/synthetic only), offline parse tests (59 unit tests pass).
+- Free-tier limits read in AI Studio by Youness on 2026-11-14: Gemini 3.8 Flash 5 RPM / 20 RPD. Gemini 3.5 Flash Lite text-out limits not read yet (config holds a conservative guess).
+- First e2e run on gemini-3.5-flash-lite (prompt cadd85983cea): 19 API calls, then 0 on re-run (cache). Debug comparison (not a reported result): after two parser fixes, 1 field differed from ground truth on 20 docs (an accent dropped on a blurred line description). `trimatch process` with Gemini on all 20 e2e files: 3 drafts (totals equal to invoices), PO-002 and PO-004 to review with the expected codes.
+- Next: step 5 plan, eval.run on the held-out test split (200 docs; check whether the Flash Lite daily quota fits).
 
 ## 2026-11-13
 - Moroccan VAT verified against CGI 2026 (docs/research/vat-cgi-2026.md); config/vat_rates.yaml = 0/10/20.

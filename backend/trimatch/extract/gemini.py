@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import sys
+import threading
 import time
 from datetime import datetime
 from pathlib import Path
@@ -79,6 +80,9 @@ class GeminiExtractor:
         self.cache_dir = CACHE_ROOT / self.model / self.prompt_hash
         self.calls = 0
         self._last_call = 0.0
+        self._lock = threading.Lock()
+        # Parallel requests within the rpm limit (calls take ~7 s, the limit allows one every 4 s).
+        self.max_workers = int(cfg.get("max_parallel", 1))
         self._client = None
 
     # --- plumbing -------------------------------------------------------------------------
@@ -108,10 +112,13 @@ class GeminiExtractor:
         f.write_text(json.dumps({"requests": self._used_today() + 1}))
 
     def _throttle(self) -> None:
-        wait = 60.0 / self.rpm - (time.monotonic() - self._last_call)
-        if wait > 0:
-            time.sleep(wait)
-        self._last_call = time.monotonic()
+        """Reserve the next request slot (thread-safe): spaced by 60/rpm and counted."""
+        with self._lock:
+            wait = 60.0 / self.rpm - (time.monotonic() - self._last_call)
+            if wait > 0:
+                time.sleep(wait)
+            self._last_call = time.monotonic()
+            self._count_request()
 
     # --- extraction -----------------------------------------------------------------------
 
@@ -139,7 +146,6 @@ class GeminiExtractor:
         contents = [types.Part.from_bytes(data=data, mime_type=MIME[p.suffix.lower()]), PROMPT]
         for attempt in range(self.max_retries + 1):
             self._throttle()
-            self._count_request()
             t0 = time.perf_counter()
             try:
                 resp = self.client().models.generate_content(
@@ -163,7 +169,8 @@ class GeminiExtractor:
                     continue
                 raise
         latency = time.perf_counter() - t0
-        self.calls += 1
+        with self._lock:
+            self.calls += 1
         usage = resp.usage_metadata
         record = {
             "file": p.relative_to(REPO_ROOT).as_posix(),

@@ -2,6 +2,7 @@
 model: gemini-3.5-flash-lite
 temperature: 0
 max_retries: 4
+max_parallel: 4   # concurrent requests; spacing still respects rpm below
 # Free-tier limits of Youness's project, read in AI Studio (Dashboard > Rate limits).
 # rpm = requests per minute, rpd = requests per day. The client stays at or under both.
 limits:

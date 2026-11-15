@@ -131,8 +131,20 @@ def parse_sentence(s: str | None) -> str | None:
 
 
 def parse_exemption(s: str | None) -> str | None:
+    """CGI article reference, normalised to "art. 91-I-A-6°" (stray marks around it dropped)."""
     t = parse_text(s)
-    return re.sub(r"\s*CGI\s*$", "", t) if t else None
+    if not t:
+        return None
+    m = re.search(r"(\d+)\s*-\s*([IVX]+)\s*-\s*([A-Z])\s*-\s*(\d+)\s*°", t)
+    return f"art. {m[1]}-{m[2]}-{m[3]}-{m[4]}°" if m else re.sub(r"\s*CGI\s*$", "", t)
+
+
+def parse_rc(s: str | None) -> str | None:
+    """RC number only: the model sometimes keeps the city printed before it."""
+    if s is None:
+        return None
+    m = re.search(r"\d+", s)
+    return m[0] if m else None
 
 
 # --- conversion to schema.py ---------------------------------------------------------------
@@ -166,7 +178,7 @@ def _party(p: RParty) -> Party:
         ice=_f(p.ice, parse_ice),
         if_number=_opt(p.if_number, parse_ice),
         tp_number=_opt(p.tp_number, parse_ice),
-        rc=_opt(p.rc, parse_text),
+        rc=_opt(p.rc, parse_rc),
     )
 
 

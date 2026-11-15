@@ -38,3 +38,8 @@ Format: date · decision · why · alternatives rejected. Newest first.
 - **Step 4 plan approved.** Default model gemini-3.5-flash-lite (larger free quota) for prompt work; gemini-3.8-flash (5 RPM / 20 RPD on Youness's project) kept for a final comparison. Model and limits in config/extract.yaml.
 - **Gemini copies values as printed; Python parses them** (French numbers, dates, ICE, "TVA 20 %", "Exonéré"). A value that is printed but unparseable gets confidence 0, so it can never reach a draft.
 - **Extractor refuses files outside data/synthetic/** (free-tier data may be used by Google).
+
+## 2026-11-15
+- **First reported result is Gemini 3.5 Flash Lite on the test split** (seed 2), run once on the prompt tuned on dev only. Test errors are counted in the report but not listed, so they can't leak into tuning.
+- **Kept the I/l ambiguity** in supplier names as a real error instead of renaming the supplier to avoid it.
+- **"No wrong draft" is the safety metric to watch** next to accuracy: misreads must end in review, never in a wrong draft bill.

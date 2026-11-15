@@ -95,3 +95,25 @@ def test_only_synthetic_files_may_be_sent(tmp_path):
         check_path(secret)
     with pytest.raises(PermissionError):
         check_path(REPO_ROOT / "data" / "raw" / "x.pdf")
+
+
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("art. 91-I-A-2°", "art. 91-I-A-2°"),
+        ("art. 91-I-A-2°I", "art. 91-I-A-2°"),
+        ("91-I-A-10°", "art. 91-I-A-10°"),
+        ("art. 91-I-A-6° CGI", "art. 91-I-A-6°"),
+    ],
+)
+def test_parse_exemption(text, expected):
+    from trimatch.extract.gemini_schema import parse_exemption
+
+    assert parse_exemption(text) == expected
+
+
+def test_parse_rc_keeps_the_number():
+    from trimatch.extract.gemini_schema import parse_rc
+
+    assert parse_rc("Casablanca 538902") == "538902"
+    assert parse_rc("29874") == "29874"

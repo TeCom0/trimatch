@@ -2,6 +2,12 @@
 
 Newest first. One entry per work session: date, what was done, what's next.
 
+## 2026-11-15
+- Step 5 (eval) done. `eval.run` writes dated reports; first reported result on the held-out test split (seed 2, 200 docs, gemini-3.5-flash-lite, code 7b4bdbc): field accuracy 99.2%, document accuracy 86.5%. e2e dry run: 8/10 decisions exact, 0 wrong drafts (2 clean cases flagged by VAT/total checks after a misread number). Reports in eval/results/, numbers in README.
+- Fixes found on the way: retry dropped Gemini connections; quota counted per Pacific day; parser normalises RC numbers and CGI article references (from dev errors only; test errors not inspected).
+- Known: "Al Waha" read as "AI Waha" (I/l look identical in Inter); harmless, suppliers are matched by ICE.
+- Next: README quickstart (SPEC 9 item 7) and a demo run-through; then the slice is done.
+
 ## 2026-11-14
 - Build step 3 done (SPEC 9, items 3 and 4, with ground-truth labels as the extractor): validate.py, match.py, decide.py, pipeline.py, cli.py (`trimatch process`), adapter bill methods, odoo/reset_bills.py.
 - Run on Youness's PC against the seeded Odoo: PO-001/003/005 -> draft bills with invoice + BL PDFs attached, totals equal to the invoices, Odoo shows "PO Matching 100%"; PO-002 -> review QTY_EXCEEDS_RECEIVED; PO-004 -> review PRICE_OVER_TOLERANCE. Second run: ALREADY_DRAFTED x3, no new bills. Dry run on the 10 degraded e2e copies gives the same decisions. 38 unit tests + 2 live Odoo tests pass.

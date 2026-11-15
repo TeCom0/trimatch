@@ -248,7 +248,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--allow-dirty", action="store_true", help="debug only; report marked DIRTY")
     args = ap.parse_args(argv)
 
-    dirty = bool(git("status", "--porcelain"))
+    dirty = bool(git("status", "--porcelain", "--", ".", ":!eval/results"))  # reports may pile up
     if dirty and not args.allow_dirty:
         sys.exit("git tree is dirty: commit first, so the report's sha is the code that ran")
     sha = git("rev-parse", "--short", "HEAD")

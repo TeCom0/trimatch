@@ -43,3 +43,5 @@ Format: date · decision · why · alternatives rejected. Newest first.
 - **First reported result is Gemini 3.5 Flash Lite on the test split** (seed 2), run once on the prompt tuned on dev only. Test errors are counted in the report but not listed, so they can't leak into tuning.
 - **Kept the I/l ambiguity** in supplier names as a real error instead of renaming the supplier to avoid it.
 - **"No wrong draft" is the safety metric to watch** next to accuracy: misreads must end in review, never in a wrong draft bill.
+- **Gemini calls run 4 in parallel** (config `max_parallel`), spaced by the rpm limit; brought the fresh-clone quickstart from 440 s to 271 s.
+- **Odoo host port configurable (`ODOO_PORT`)**, so a second stack can run next to the demo one.

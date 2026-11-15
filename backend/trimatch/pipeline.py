@@ -4,6 +4,7 @@ match, decide, then a draft bill in Odoo or a review entry. Nothing is ever post
 from __future__ import annotations
 
 import json
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from decimal import Decimal
@@ -214,7 +215,10 @@ def process(
     review_dir: Path = REVIEW_DIR,
 ) -> tuple[list[Result], list[Extracted]]:
     cfg = load_config()
-    items = [Extracted(p, extractor.extract(p)) for p in paths]
+    workers = getattr(extractor, "max_workers", 1)
+    with ThreadPoolExecutor(max_workers=workers) as pool:  # order kept; rate limit in extractor
+        docs = list(pool.map(extractor.extract, paths))
+    items = [Extracted(p, d) for p, d in zip(paths, docs, strict=True)]
     groups, lone_bls = group(items)
     company = client.buyer_company()
     refs = OdooRefs(company_ice=company["ice"], suppliers=client.suppliers())

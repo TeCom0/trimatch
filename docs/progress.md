@@ -6,7 +6,9 @@ Newest first. One entry per work session: date, what was done, what's next.
 - Step 5 (eval) done. `eval.run` writes dated reports; first reported result on the held-out test split (seed 2, 200 docs, gemini-3.5-flash-lite, code 7b4bdbc): field accuracy 99.2%, document accuracy 86.5%. e2e dry run: 8/10 decisions exact, 0 wrong drafts (2 clean cases flagged by VAT/total checks after a misread number). Reports in eval/results/, numbers in README.
 - Fixes found on the way: retry dropped Gemini connections; quota counted per Pacific day; parser normalises RC numbers and CGI article references (from dev errors only; test errors not inspected).
 - Known: "Al Waha" read as "AI Waha" (I/l look identical in Inter); harmless, suppliers are matched by ICE.
-- Next: README quickstart (SPEC 9 item 7) and a demo run-through; then the slice is done.
+- README quickstart written and run on a fresh clone (separate compose project, port 8070): 271 s from `compose up` to processed documents (images already pulled), after making Gemini extraction parallel (4 workers within 15 RPM; first try was 440 s). Run 1 of the fresh clone: 3 drafts + 2 reviews; run 2: PO-003 sent to review by VAT_MATH after Gemini read a VAT base 2 204,00 as 2 204,04 (same misread as in the e2e eval). Second process run creates nothing new.
+- SPEC section 9: items 1-7 all met. Phase 0 slice done.
+- Next (Phase 1, needs a plan): review screen, duplicate-invoice scenario, UBL path, local extractor comparison, real held-out documents.
 
 ## 2026-11-14
 - Build step 3 done (SPEC 9, items 3 and 4, with ground-truth labels as the extractor): validate.py, match.py, decide.py, pipeline.py, cli.py (`trimatch process`), adapter bill methods, odoo/reset_bills.py.

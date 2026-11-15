@@ -2,7 +2,50 @@
 
 Reads Moroccan supplier paperwork (delivery notes and invoices: scans, photos, later UBL e-invoices), reconciles them against the purchase order and the goods receipt in Odoo (three-way match), and creates **draft** vendor bills. Uncertain cases go to a human review queue. Nothing is ever posted or paid automatically.
 
-**Status:** Phase 0 (vertical slice) in progress. See [docs/SPEC.md](docs/SPEC.md) and [docs/progress.md](docs/progress.md).
+**Status:** Phase 0 vertical slice complete (Odoo 20 Community, Gemini extraction, deterministic three-way match). See [docs/SPEC.md](docs/SPEC.md) and [docs/progress.md](docs/progress.md).
+
+## Quickstart
+
+Needs Docker, [uv](https://docs.astral.sh/uv/) and a free Gemini API key from Google AI Studio. Only the generated synthetic documents are ever sent to Gemini. The commands work in PowerShell and bash, run from the repo root.
+
+```
+git clone https://github.com/TeCom0/trimatch.git
+cd trimatch
+cp .env.example .env            # then put your key after GEMINI_API_KEY=
+```
+
+**1. Odoo 20 with the fake company** (details in [odoo/README.md](odoo/README.md)):
+
+```
+docker compose -f odoo/docker-compose.yml up -d db
+docker compose -f odoo/docker-compose.yml run --rm odoo odoo db init trimatch --country MA
+docker compose -f odoo/docker-compose.yml run --rm odoo odoo -d trimatch -i purchase_stock,l10n_ma --stop-after-init
+docker compose -f odoo/docker-compose.yml run --rm odoo bash -c "odoo shell -d trimatch --no-http < /mnt/trimatch/odoo/seed.py"
+docker compose -f odoo/docker-compose.yml up -d odoo
+```
+
+The seed prints `ODOO_API_KEY=...` once: put that line in `.env`.
+
+**2. Python side:**
+
+```
+uv sync --project backend
+uv run --project backend playwright install chromium
+uv run --project backend python -m trimatch.odoo_adapter --check
+```
+
+**3. Generate the 5 orders' delivery notes and invoices, then process them:**
+
+```
+uv run --project backend python -m trimatch.generate --split e2e
+uv run --project backend trimatch process "data/synthetic/e2e/*" --extractor gemini
+```
+
+Expected: draft bills in Odoo for PO-001, PO-003 and PO-005 with the PDFs attached, and review entries in `data/review/` for PO-002 (`QTY_EXCEEDS_RECEIVED`, short delivery) and PO-004 (`PRICE_OVER_TOLERANCE`, +8%). Running it again creates nothing new. Gemini sometimes misreads one number (seen: a VAT base of 2 204,00 read as 2 204,04 on PO-003); the VAT checks then send that invoice to review (`VAT_MATH`) instead of drafting it, which is the intended behaviour.
+
+Measured 2026-11-15 on a fresh clone (Windows 11, Docker images already pulled): 4 min 31 s from `docker compose up` to the processed documents. Open http://127.0.0.1:8069 (admin / admin, local only) → Invoicing → Vendors → Bills.
+
+`--extractor labels` uses the generator's ground truth instead of Gemini (no API key needed), `--dry-run` decides without writing anything, and `python -m eval.run --split test` reproduces the results below.
 
 ## Results
 

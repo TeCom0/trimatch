@@ -36,7 +36,7 @@ services:
     entrypoint: ["/bin/bash", "/mnt/trimatch/odoo/entrypoint.sh"]
     command: ["odoo"]
     ports:
-      - "127.0.0.1:8069:8069"
+      - "127.0.0.1:${ODOO_PORT:-8069}:8069"
     volumes:
       - odoo-data:/var/lib/odoo
       - ..:/mnt/trimatch:ro

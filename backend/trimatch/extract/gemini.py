@@ -12,8 +12,9 @@ import json
 import os
 import sys
 import time
-from datetime import date
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import yaml
 
@@ -26,6 +27,11 @@ SYNTHETIC_ROOT = (REPO_ROOT / "data" / "synthetic").resolve()
 CACHE_ROOT = REPO_ROOT / "data" / "cache" / "gemini"
 PROMPT = (Path(__file__).parent / "prompt_fr.md").read_text(encoding="utf-8")
 MIME = {".pdf": "application/pdf", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png"}
+
+
+TRANSIENT_ERRORS = ("Protocol", "Timeout", "Connect", "ReadError", "WriteError")
+# Google resets free-tier daily quotas at midnight Pacific time, so the local budget uses that day.
+QUOTA_TZ = ZoneInfo("America/Los_Angeles")
 
 
 class QuotaExhausted(RuntimeError):
@@ -89,7 +95,8 @@ class GeminiExtractor:
         return self._client
 
     def _usage_file(self) -> Path:
-        return CACHE_ROOT / "usage" / f"{date.today().isoformat()}_{self.model}.json"
+        quota_day = datetime.now(QUOTA_TZ).date().isoformat()
+        return CACHE_ROOT / "usage" / f"{quota_day}_PT_{self.model}.json"
 
     def _used_today(self) -> int:
         f = self._usage_file()
@@ -146,6 +153,12 @@ class GeminiExtractor:
                         f"{self.model}: Google reports the daily quota is used up"
                     ) from exc
                 if exc.code in (429, 500, 503) and attempt < self.max_retries:
+                    time.sleep(min(60, 5 * 2**attempt))
+                    continue
+                raise
+            except Exception as exc:  # dropped connection, timeout: retry, never count as data
+                transient = any(w in type(exc).__name__ for w in TRANSIENT_ERRORS)
+                if transient and attempt < self.max_retries:
                     time.sleep(min(60, 5 * 2**attempt))
                     continue
                 raise

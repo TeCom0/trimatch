@@ -2,6 +2,12 @@
 
 Newest first. One entry per work session: date, what was done, what's next.
 
+## 2026-11-16
+- Phase 1 review screen plan (docs/plan-phase1-review-screen.md) approved with D1-D3 as recommended.
+- PR 1 of 4 built: `pipeline.evaluate()` (pure validate + match + decide, shared by the CLI and the coming review API) and `create_checked_draft()` split out of `process_group`; review store in PostgreSQL (`trimatch_review` database and `trimatch` role in the Odoo Postgres container, SQLAlchemy 2 + psycopg 3, Alembic migration 0001); `trimatch db init|upgrade`, `trimatch review import`; `trimatch process` writes review cases to the store (`--review-to json` keeps the Phase 0 files). The two Phase 0 review files imported as cases #1 and #2. CI runs the store tests against a Postgres 16 service.
+- Found: Odoo's database is also named `trimatch`; the first `db init` put an empty `alembic_version` table in it (dropped at once). The store is now `trimatch_review` and `upgrade()` refuses Odoo's database name.
+- Next: PR 2, FastAPI endpoints (queue, case, page images, recheck, approve, reject).
+
 ## 2026-11-15
 - Step 5 (eval) done. `eval.run` writes dated reports; first reported result on the held-out test split (seed 2, 200 docs, gemini-3.5-flash-lite, code 7b4bdbc): field accuracy 99.2%, document accuracy 86.5%. e2e dry run: 8/10 decisions exact, 0 wrong drafts (2 clean cases flagged by VAT/total checks after a misread number). Reports in eval/results/, numbers in README.
 - Fixes found on the way: retry dropped Gemini connections; quota counted per Pacific day; parser normalises RC numbers and CGI article references (from dev errors only; test errors not inspected).

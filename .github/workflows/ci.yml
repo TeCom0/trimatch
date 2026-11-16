@@ -1,5 +1,6 @@
 # Lint + unit tests (SPEC 9, item 6). No Odoo and no Gemini in CI: the live Odoo tests
 # skip themselves, and Gemini parsing is tested on a recorded synthetic response.
+# The review store tests use a Postgres service container.
 name: ci
 on:
   push:
@@ -9,6 +10,20 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      # Review store tests (tests/test_store.py) run against a throwaway Postgres 16.
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: trimatch
+          POSTGRES_PASSWORD: trimatch
+          POSTGRES_DB: trimatch_review_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U trimatch -d trimatch_review_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TRIMATCH_TEST_DB_URL: postgresql+psycopg://trimatch:trimatch@127.0.0.1:5432/trimatch_review_test
     defaults:
       run:
         working-directory: backend

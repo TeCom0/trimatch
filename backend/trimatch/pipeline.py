@@ -9,12 +9,13 @@ from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
+from typing import Protocol
 
 from trimatch.checks import Check
 from trimatch.config import REPO_ROOT, MatchConfig, load_config
 from trimatch.decide import Decision, confidence_check, decide
 from trimatch.extract import Extractor
-from trimatch.match import PoSnapshot, match_order
+from trimatch.match import LinePair, PoSnapshot, match_order
 from trimatch.odoo_adapter import OdooClient
 from trimatch.schema import DeliveryNote, Invoice
 from trimatch.validate import OdooRefs, validate_bl, validate_invoice
@@ -101,12 +102,89 @@ def _jsonable(obj):
     raise TypeError(type(obj))
 
 
-def _write_review(
-    res: Result, inv: Extracted, bl: Extracted | None, po: PoSnapshot | None, review_dir: Path
-) -> Path:
-    review_dir.mkdir(parents=True, exist_ok=True)
-    safe = "".join(c if c.isalnum() or c in "-_" else "_" for c in res.invoice_number)
-    path = review_dir / f"{inv.doc.supplier.ice.value}_{safe}.json"
+# --- pure part: the same code runs for `trimatch process` and for the review screen -------
+
+
+@dataclass
+class Evaluation:
+    checks: list[Check]
+    pairs: list[LinePair]
+    decision: Decision
+    partner_id: int | None
+
+
+def supplier_partner_id(inv: Invoice, refs: OdooRefs) -> int | None:
+    sup = [s for s in refs.suppliers if s["ice"] == inv.supplier.ice.value]
+    return sup[0]["id"] if len(sup) == 1 else None
+
+
+def po_ref_of(inv: Invoice, bl: DeliveryNote | None) -> str | None:
+    if inv.po_ref and inv.po_ref.value:
+        return inv.po_ref.value
+    return bl.po_ref.value if bl and bl.po_ref else None
+
+
+def evaluate(
+    inv: Invoice,
+    bl: DeliveryNote | None,
+    po: PoSnapshot | None,
+    refs: OdooRefs,
+    cfg: MatchConfig,
+) -> Evaluation:
+    """Validation + three-way match + decision. Pure: Odoo data comes in as arguments."""
+    partner_id = supplier_partner_id(inv, refs)
+    checks: list[Check] = validate_invoice(inv, refs, cfg)
+    checks.append(confidence_check(inv, cfg, "invoice"))
+    if bl:
+        checks += validate_bl(bl, refs)
+        checks.append(confidence_check(bl, cfg, "bl"))
+    match_checks, pairs = match_order(inv, bl, po, partner_id, cfg)
+    checks += match_checks
+    return Evaluation(checks, pairs, decide(checks), partner_id)
+
+
+# --- Odoo side effects ------------------------------------------------------------------
+
+
+def create_checked_draft(
+    client: OdooClient,
+    po: PoSnapshot,
+    inv: Invoice,
+    pairs: list[LinePair],
+    files: list[Path],
+) -> tuple[dict | None, Check | None]:
+    """Draft bill + totals safety check + attachments. -> (bill, None) or (None, failed check).
+
+    If Odoo's totals differ from the invoice, the draft created here is deleted again and
+    the case goes to review with BILL_TOTAL_MISMATCH. Nothing is ever posted.
+    """
+    bill = client.create_draft_bill(po, inv, pairs)
+    vat_total = sum((v.amount.value for v in inv.vat), Decimal(0))
+    diffs = [
+        f"{name}: Odoo {_money(bill[f])} vs invoice {want}"
+        for name, f, want in (
+            ("untaxed", "amount_untaxed", inv.total_ht.value),
+            ("tax", "amount_tax", vat_total),
+            ("total", "amount_total", inv.total_ttc.value),
+        )
+        if abs(_money(bill[f]) - want) > TOL
+    ]
+    if diffs:
+        client.delete_own_draft(bill["id"])
+        return None, Check("BILL_TOTAL_MISMATCH", False, "; ".join(diffs))
+    att_ids = client.attach("account.move", bill["id"], files)
+    # Show the invoice (not the BL) in Odoo's document preview.
+    client.call(
+        "account.move", "write", ids=[bill["id"]], vals={"message_main_attachment_id": att_ids[0]}
+    )
+    return bill, None
+
+
+# --- review queue -----------------------------------------------------------------------
+
+
+def review_entry(res: Result, inv: Extracted, bl: Extracted | None, po: PoSnapshot | None) -> dict:
+    """One review case as plain JSON: the format of the store and of `data/review/*.json`."""
     entry = {
         "created_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "decision": "review",
@@ -117,10 +195,26 @@ def _write_review(
         "bl": bl.doc.model_dump(mode="json") if bl else None,
         "odoo_po": asdict(po) if po else None,
     }
-    path.write_text(
-        json.dumps(entry, indent=1, ensure_ascii=False, default=_jsonable), encoding="utf-8"
-    )
-    return path
+    return json.loads(json.dumps(entry, ensure_ascii=False, default=_jsonable))
+
+
+class ReviewSink(Protocol):
+    def __call__(self, entry: dict) -> str: ...
+
+
+class JsonReviewSink:
+    """Writes `<dir>/<supplier ICE>_<invoice no>.json` (the Phase 0 format)."""
+
+    def __init__(self, review_dir: Path = REVIEW_DIR):
+        self.review_dir = review_dir
+
+    def __call__(self, entry: dict) -> str:
+        self.review_dir.mkdir(parents=True, exist_ok=True)
+        number = entry["invoice"]["number"]["value"] or "unknown"
+        safe = "".join(c if c.isalnum() or c in "-_" else "_" for c in number)
+        path = self.review_dir / f"{entry['invoice']['supplier']['ice']['value']}_{safe}.json"
+        path.write_text(json.dumps(entry, indent=1, ensure_ascii=False), encoding="utf-8")
+        return str(path)
 
 
 def process_group(
@@ -130,13 +224,12 @@ def process_group(
     refs: OdooRefs,
     cfg: MatchConfig,
     dry_run: bool,
-    review_dir: Path,
+    review_sink: ReviewSink,
 ) -> Result:
     inv: Invoice = inv_x.doc
     bl = bl_x.doc if bl_x else None
-    sup = [s for s in refs.suppliers if s["ice"] == inv.supplier.ice.value]
-    partner_id = sup[0]["id"] if len(sup) == 1 else None
-    po_ref = inv.po_ref.value if inv.po_ref else (bl.po_ref.value if bl and bl.po_ref else None)
+    partner_id = supplier_partner_id(inv, refs)
+    po_ref = po_ref_of(inv, bl)
     res = Result(
         inv_x.path.name,
         bl_x.path.name if bl_x else None,
@@ -163,47 +256,19 @@ def process_group(
             res.bill = existing[0]
             return res
 
-    checks: list[Check] = validate_invoice(inv, refs, cfg)
-    checks.append(confidence_check(inv, cfg, "invoice"))
-    if bl:
-        checks += validate_bl(bl, refs)
-        checks.append(confidence_check(bl, cfg, "bl"))
     po = client.po_snapshot(po_ref) if po_ref else None
-    match_checks, pairs = match_order(inv, bl, po, partner_id, cfg)
-    checks += match_checks
-    res.decision = decide(checks)
+    ev = evaluate(inv, bl, po, refs, cfg)
+    res.decision = ev.decision
 
     if res.decision.action == "draft" and not dry_run:
-        bill = client.create_draft_bill(po, inv, pairs)
-        vat_total = sum((v.amount.value for v in inv.vat), Decimal(0))
-        diffs = [
-            f"{name}: Odoo {_money(bill[f])} vs invoice {want}"
-            for name, f, want in (
-                ("untaxed", "amount_untaxed", inv.total_ht.value),
-                ("tax", "amount_tax", vat_total),
-                ("total", "amount_total", inv.total_ttc.value),
-            )
-            if abs(_money(bill[f]) - want) > TOL
-        ]
-        if diffs:
-            client.delete_own_draft(bill["id"])
-            res.decision = Decision(
-                "review", [Check("BILL_TOTAL_MISMATCH", False, "; ".join(diffs))]
-            )
-        else:
-            files = [inv_x.path] + ([bl_x.path] if bl_x else [])
-            att_ids = client.attach("account.move", bill["id"], files)
-            # Show the invoice (not the BL) in Odoo's document preview.
-            client.call(
-                "account.move",
-                "write",
-                ids=[bill["id"]],
-                vals={"message_main_attachment_id": att_ids[0]},
-            )
-            res.bill = bill
+        files = [inv_x.path] + ([bl_x.path] if bl_x else [])
+        bill, failure = create_checked_draft(client, po, inv, ev.pairs, files)
+        if failure:
+            res.decision = Decision("review", [failure])
+        res.bill = bill
 
     if res.decision.action == "review" and not dry_run:
-        res.review_file = str(_write_review(res, inv_x, bl_x, po, review_dir))
+        res.review_file = review_sink(review_entry(res, inv_x, bl_x, po))
     return res
 
 
@@ -212,8 +277,10 @@ def process(
     extractor: Extractor,
     client: OdooClient,
     dry_run: bool = False,
-    review_dir: Path = REVIEW_DIR,
+    review_sink: ReviewSink | None = None,
 ) -> tuple[list[Result], list[Extracted]]:
+    """Run the whole flow. Review cases go to `review_sink` (default: JSON in data/review)."""
+    sink = review_sink or JsonReviewSink()
     cfg = load_config()
     workers = getattr(extractor, "max_workers", 1)
     with ThreadPoolExecutor(max_workers=workers) as pool:  # order kept; rate limit in extractor
@@ -224,7 +291,7 @@ def process(
     refs = OdooRefs(company_ice=company["ice"], suppliers=client.suppliers())
     results = []
     for inv_x, bl_x, dups in groups:
-        r = process_group(inv_x, bl_x, client, refs, cfg, dry_run, review_dir)
+        r = process_group(inv_x, bl_x, client, refs, cfg, dry_run, sink)
         r.duplicates = [p.name for p in dups]
         results.append(r)
     return results, lone_bls

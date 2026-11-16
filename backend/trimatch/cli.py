@@ -15,9 +15,14 @@ import typer
 from trimatch.extract import get_extractor
 from trimatch.extract.gemini import QuotaExhausted
 from trimatch.odoo_adapter import OdooClient
+from trimatch.pipeline import JsonReviewSink, ReviewSink
 from trimatch.pipeline import process as run_pipeline
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
+db_app = typer.Typer(no_args_is_help=True, help="Review store (PostgreSQL) setup.")
+review_app = typer.Typer(no_args_is_help=True, help="Review queue.")
+app.add_typer(db_app, name="db")
+app.add_typer(review_app, name="review")
 
 
 @app.callback()
@@ -44,14 +49,22 @@ def process(
         str, typer.Option(help="labels (ground truth) | gemini (step 4)")
     ] = "labels",
     dry_run: Annotated[
-        bool, typer.Option(help="Decide only: no Odoo writes, no review files.")
+        bool, typer.Option(help="Decide only: no Odoo writes, no review cases.")
     ] = False,
+    review_to: Annotated[
+        str, typer.Option(help="store (review screen database) | json (files in data/review)")
+    ] = "store",
 ) -> None:
-    """Read BL + invoice documents, match them against Odoo, create draft bills or review entries."""
+    """Read BL + invoice documents, match them against Odoo, create draft bills or review cases."""
     paths = _expand(files)
+    sink = None if dry_run else _review_sink(review_to)
     try:
         results, lone_bls = run_pipeline(
-            paths, get_extractor(extractor), OdooClient.from_env(), dry_run=dry_run
+            paths,
+            get_extractor(extractor),
+            OdooClient.from_env(),
+            dry_run=dry_run,
+            review_sink=sink,
         )
     except httpx.ConnectError as exc:
         typer.echo(
@@ -78,12 +91,77 @@ def process(
         else:
             what = ", ".join(r.decision.codes)
         typer.echo(f"{r.po_ref or '?':<8} {r.invoice_number:<20} {r.decision.action:<8} {what}")
+        if r.review_file:
+            typer.echo(f"{'':<38}-> {r.review_file}")
         for c in r.decision.reasons if r.decision.action == "review" else []:
             typer.echo(f"{'':<38}- {c.code}: {c.detail}")
         if r.duplicates:
             typer.echo(f"{'':<38}(also received as: {', '.join(r.duplicates)})")
     for b in lone_bls:
         typer.echo(f"BL {b.doc.number.value} ({b.path.name}): no invoice yet, nothing to do")
+
+
+def _review_sink(target: str) -> ReviewSink:
+    if target == "json":
+        return JsonReviewSink()
+    if target != "store":
+        raise typer.BadParameter("--review-to must be 'store' or 'json'")
+    from trimatch.store.cases import StoreReviewSink
+    from trimatch.store.db import StoreNotConfigured, session_factory
+
+    try:
+        return StoreReviewSink(session_factory())
+    except StoreNotConfigured as exc:
+        typer.echo(f"ERROR: {exc}", err=True)
+        raise typer.Exit(1) from exc
+
+
+@db_app.command("init")
+def db_init(
+    test_db: Annotated[
+        bool, typer.Option("--test-db", help="Also create trimatch_review_test for pytest.")
+    ] = False,
+) -> None:
+    """Create the trimatch role + database in the Odoo Postgres container and migrate it."""
+    from trimatch.store import db
+
+    dbs = ("trimatch_review", "trimatch_review_test") if test_db else ("trimatch_review",)
+    try:
+        for line in db.init(dbs):
+            typer.echo(line)
+    except Exception as exc:  # connection refused, wrong admin URL, ...
+        typer.echo(
+            f"ERROR: {exc}\nIs the database container up? "
+            "docker compose -f odoo/docker-compose.yml up -d db",
+            err=True,
+        )
+        raise typer.Exit(1) from exc
+
+
+@db_app.command("upgrade")
+def db_upgrade() -> None:
+    """Apply pending migrations to the review store."""
+    from trimatch.store import db
+
+    db.upgrade()
+    typer.echo("migrations applied")
+
+
+@review_app.command("import")
+def review_import(
+    files: Annotated[list[str], typer.Argument(help="Phase 0 review JSON files; globs allowed.")],
+) -> None:
+    """Load review entries written as JSON (data/review/*.json) into the review store."""
+    from trimatch.store.cases import import_json_files
+    from trimatch.store.db import session_factory
+
+    hits = [Path(h) for p in files for h in sorted(glob.glob(p))]
+    paths = [h for h in hits if h.suffix == ".json"]
+    if not paths:
+        raise typer.BadParameter(f"no JSON files match {files}")
+    with session_factory().begin() as s:
+        for f, r in import_json_files(s, paths):
+            typer.echo(f"{f.name}: case #{r.case_id} {r.outcome}")
 
 
 if __name__ == "__main__":

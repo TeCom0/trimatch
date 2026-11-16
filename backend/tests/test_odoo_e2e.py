@@ -12,7 +12,7 @@ import pytest
 from trimatch.config import REPO_ROOT
 from trimatch.extract import LabelExtractor
 from trimatch.odoo_adapter import OdooClient
-from trimatch.pipeline import process
+from trimatch.pipeline import JsonReviewSink, process
 
 pytestmark = [
     pytest.mark.odoo,
@@ -33,7 +33,9 @@ def _clean() -> list[Path]:
 def test_three_drafts_two_reviews_and_idempotent(tmp_path):
     client = OdooClient.from_env()
     for run in (1, 2):
-        results, _ = process(_clean(), LabelExtractor(), client, review_dir=tmp_path)
+        results, _ = process(
+            _clean(), LabelExtractor(), client, review_sink=JsonReviewSink(tmp_path)
+        )
         by_po = {r.po_ref: r for r in results}
         assert set(by_po) == {"PO-001", "PO-002", "PO-003", "PO-004", "PO-005"}
         for po, codes in EXPECTED_REVIEW.items():
@@ -51,7 +53,9 @@ def test_three_drafts_two_reviews_and_idempotent(tmp_path):
 def test_dry_run_degraded_copies_decide_like_clean(tmp_path):
     client = OdooClient.from_env()
     degraded = sorted(E2E.glob("*.jpg"))
-    results, _ = process(degraded, LabelExtractor(), client, dry_run=True, review_dir=tmp_path)
+    results, _ = process(
+        degraded, LabelExtractor(), client, dry_run=True, review_sink=JsonReviewSink(tmp_path)
+    )
     by_po = {r.po_ref: r.decision for r in results}
     for po, codes in EXPECTED_REVIEW.items():
         assert by_po[po].codes == codes

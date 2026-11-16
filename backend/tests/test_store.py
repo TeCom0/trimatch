@@ -1,34 +1,19 @@
-"""Review store (PostgreSQL) and the pipeline's evaluate()/review_entry() that feed it.
-
-Store tests need a disposable database: TRIMATCH_TEST_DB_URL (CI service container), or
-locally `trimatch db init --test-db` (database trimatch_review_test). Its public schema is
-dropped and rebuilt from the migrations. Without either, they skip.
-"""
+"""Review store (PostgreSQL) and the pipeline's evaluate()/review_entry() that feed it."""
 
 from __future__ import annotations
 
 import json
-import os
-from decimal import Decimal as D
 from pathlib import Path
 
 import pytest
 from alembic.autogenerate import compare_metadata
 from alembic.migration import MigrationContext
-from sqlalchemy import func, make_url, select, text
+from conftest import CFG, make_entry, make_po
+from sqlalchemy import func, make_url, select
 
-from trimatch.config import load_config
+from trimatch.checks import Check
 from trimatch.decide import Decision
-from trimatch.generate.data import build_split, load_seed_data
-from trimatch.match import PoLine, PoSnapshot
-from trimatch.pipeline import (
-    Extracted,
-    JsonReviewSink,
-    Result,
-    evaluate,
-    po_ref_of,
-    review_entry,
-)
+from trimatch.pipeline import JsonReviewSink, evaluate, po_ref_of
 from trimatch.schema import Invoice
 from trimatch.store import db as store_db
 from trimatch.store.cases import (
@@ -38,71 +23,10 @@ from trimatch.store.cases import (
     upsert_case,
 )
 from trimatch.store.models import Base, CaseStatus, ReviewCase
-from trimatch.validate import OdooRefs
-
-CFG = load_config()
-SUPPLIER_ID = {"alwaha": 11, "anfa": 12, "hygipro": 13}
-
-
-# --- fixtures: generator ground truth as "extracted" documents ---------------------------
-
-
-@pytest.fixture(scope="module")
-def seed():
-    return load_seed_data()
-
-
-@pytest.fixture(scope="module")
-def e2e(seed):
-    return {(d.po_ref, d.kind): d for d in build_split("e2e", seed) if d.variant == "clean"}
-
-
-@pytest.fixture(scope="module")
-def refs(seed):
-    return OdooRefs(
-        company_ice=seed["company"]["ice"],
-        suppliers=[
-            {"id": SUPPLIER_ID[s["key"]], "name": s["name"], "ice": s["ice"]}
-            for s in seed["suppliers"]
-        ],
-    )
-
-
-def po_snapshot(seed, name) -> PoSnapshot:
-    po = next(p for p in seed["purchase_orders"] if p["name"] == name)
-    products = {p["code"]: p for p in seed["products"]}
-    return PoSnapshot(
-        id=1,
-        name=name,
-        partner_id=SUPPLIER_ID[po["supplier"]],
-        state="purchase",
-        lines=[
-            PoLine(
-                id=100 + i,
-                default_code=ln["product"],
-                product_name=products[ln["product"]]["name"],
-                uom=products[ln["product"]]["uom"],
-                qty_ordered=D(str(ln["qty"])),
-                qty_received=D(str(ln.get("received", ln["qty"]))),
-                qty_invoiced=D(0),
-                price_unit=D(str(products[ln["product"]]["price"])),
-            )
-            for i, ln in enumerate(po["lines"])
-        ],
-    )
 
 
 def entry_for(seed, e2e, refs, po_name: str) -> dict:
-    inv, bl = e2e[po_name, "invoice"], e2e[po_name, "bl"]
-    po = po_snapshot(seed, po_name)
-    ev = evaluate(inv.label, bl.label, po, refs, CFG)
-    res = Result("inv.pdf", "bl.pdf", "x", inv.label.number.value, po_name, ev.decision, None, None)
-    return review_entry(
-        res,
-        Extracted(Path(f"data/synthetic/e2e/{po_name}_invoice.pdf"), inv.label),
-        Extracted(Path(f"data/synthetic/e2e/{po_name}_bl.pdf"), bl.label),
-        po,
-    )
+    return make_entry(seed, refs, po_name, e2e[po_name, "invoice"].label, e2e[po_name, "bl"].label)
 
 
 # --- pure: evaluate() is the single decision path ----------------------------------------
@@ -120,9 +44,9 @@ def entry_for(seed, e2e, refs, po_name: str) -> dict:
 )
 def test_evaluate_e2e_scenarios(seed, e2e, refs, po_name, action, codes):
     inv, bl = e2e[po_name, "invoice"].label, e2e[po_name, "bl"].label
-    ev = evaluate(inv, bl, po_snapshot(seed, po_name), refs, CFG)
+    ev = evaluate(inv, bl, make_po(seed, po_name), refs, CFG)
     assert ev.decision.action == action and ev.decision.codes == codes
-    assert ev.partner_id == po_snapshot(seed, po_name).partner_id
+    assert ev.partner_id == make_po(seed, po_name).partner_id
     assert len(ev.pairs) == len(inv.lines)
 
 
@@ -137,7 +61,7 @@ def test_review_entry_round_trips(seed, e2e, refs):
     json.dumps(entry)  # plain JSON, no Decimals
     assert entry["reason_codes"] == ["PRICE_OVER_TOLERANCE"]
     assert Invoice.model_validate(entry["invoice"]) == e2e["PO-004", "invoice"].label
-    assert po_from_json(entry["odoo_po"]) == po_snapshot(seed, "PO-004")
+    assert po_from_json(entry["odoo_po"]) == make_po(seed, "PO-004")
     assert po_from_json(None) is None
 
 
@@ -153,39 +77,17 @@ def test_upgrade_refuses_odoo_database():
         store_db.upgrade(make_url("postgresql+psycopg://u:p@127.0.0.1:1/trimatch"))
 
 
+def test_decision_codes_sorted_and_unique():
+    d = Decision("review", [Check("B", False), Check("A", False), Check("B", False)])
+    assert d.codes == ["A", "B"]
+
+
 # --- store (needs PostgreSQL) -------------------------------------------------------------
 
 
-def _test_db_url():
-    if raw := os.environ.get("TRIMATCH_TEST_DB_URL"):
-        return make_url(raw)
-    try:
-        return store_db.database_url("trimatch_review_test")
-    except store_db.StoreNotConfigured:
-        return None
-
-
-@pytest.fixture(scope="module")
-def sessions():
-    url = _test_db_url()
-    if url is None:
-        pytest.skip("no test database (TRIMATCH_TEST_DB_URL or `trimatch db init --test-db`)")
-    eng = store_db.engine(url)
-    try:
-        with eng.begin() as conn:
-            conn.execute(text("DROP SCHEMA public CASCADE"))
-            conn.execute(text("CREATE SCHEMA public"))
-    except Exception as exc:  # noqa: BLE001 (any connection failure means: no database here)
-        pytest.skip(f"test database not reachable: {exc}")
-    store_db.upgrade(url)
-    return store_db.session_factory(url)
-
-
 @pytest.fixture
-def s(sessions):
-    with sessions.begin() as session:
-        session.execute(text("TRUNCATE review_case RESTART IDENTITY CASCADE"))
-    with sessions() as session:
+def s(clean_db):
+    with clean_db() as session:
         yield session
         session.rollback()
 
@@ -207,8 +109,8 @@ def test_upsert_creates_then_refreshes_open_case(s, seed, e2e, refs):
     assert case.status == CaseStatus.open
     assert case.reason_codes == ["PRICE_OVER_TOLERANCE", "LOW_CONFIDENCE"]
     assert case.po_ref == "PO-004" and case.supplier_name == "Distribution Anfa SARL"
-    assert case.invoice_file.endswith("PO-004_invoice.pdf")
-    assert po_from_json(case.odoo_po) == po_snapshot(seed, "PO-004")
+    assert case.invoice_file.replace("\\", "/").endswith("PO-004_invoice.pdf")
+    assert po_from_json(case.odoo_po) == make_po(seed, "PO-004")
 
 
 def test_decided_case_is_never_reopened(s, seed, e2e, refs):
@@ -229,19 +131,11 @@ def test_invalid_entry_is_refused(s, seed, e2e, refs):
     assert s.scalar(select(func.count()).select_from(ReviewCase)) == 0
 
 
-def test_store_sink_and_json_import_agree(sessions, s, seed, e2e, refs, tmp_path):
+def test_store_sink_and_json_import_agree(clean_db, s, seed, e2e, refs, tmp_path):
     entry = entry_for(seed, e2e, refs, "PO-004")
-    msg = StoreReviewSink(sessions)(entry)
+    msg = StoreReviewSink(clean_db)(entry)
     assert msg.startswith("review case #1 (created)")
     path = Path(JsonReviewSink(tmp_path)(entry))
     [(f, r)] = import_json_files(s, [path])
     assert (f, r.case_id, r.outcome) == (path, 1, "updated")
     assert s.scalar(select(func.count()).select_from(ReviewCase)) == 1
-
-
-def test_decision_type_unchanged():
-    # The CLI and the API both read Decision.codes; keep it sorted and unique.
-    from trimatch.checks import Check
-
-    d = Decision("review", [Check("B", False), Check("A", False), Check("B", False)])
-    assert d.codes == ["A", "B"]

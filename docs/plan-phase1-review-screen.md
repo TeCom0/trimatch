@@ -1,6 +1,6 @@
 # Phase 1, item 1: review screen (plan)
 
-Status: DRAFT 2026-11-16, for Youness's approval. Covers the "Review screen" line of the brief (section 3) and the Phase 1 FastAPI + React items of SPEC section 2.
+Status: APPROVED 2026-11-16 (D1-D3 as recommended). Covers the "Review screen" line of the brief (section 3) and the Phase 1 FastAPI + React items of SPEC section 2.
 
 ## Goal
 
@@ -49,6 +49,6 @@ The store records when a case was opened and decided, so a later report can give
 Login/auth (reviewer name comes from config, see D3), uploading documents from the UI, email intake, the LangGraph agent, duplicate-invoice scenario, UBL, deployment, Arabic. Each is its own Phase 1 or later item.
 
 ## Decisions for Youness
-- **D1. Database.** *Recommended: PostgreSQL*, a second database `trimatch` in the Postgres 16 container that Odoo already runs (no new service), SQLAlchemy 2 + psycopg 3, Alembic for migrations. Matches the brief's stack and costs nothing. CI gets a Postgres service container. Alternative: SQLite file in `data/`, simpler but a stack I'd swap later anyway.
+- **D1. Database.** *Recommended: PostgreSQL*, a second database `trimatch_review` (role `trimatch`) in the Postgres 16 container that Odoo already runs (no new service), SQLAlchemy 2 + psycopg 3, Alembic for migrations. Matches the brief's stack and costs nothing. CI gets a Postgres service container. Alternative: SQLite file in `data/`, simpler but a stack I'd swap later anyway.
 - **D2. Override rules.** *Recommended:* the reviewer can fix any extracted value. After fixes, `PRICE_OVER_TOLERANCE`, `QTY_BL_MISMATCH` and `LOW_CONFIDENCE` can be overridden with a written reason. `QTY_EXCEEDS_RECEIVED` cannot: Odoo bills received quantities, so the only correct answers are reject (ask for a credit note) or a later receipt in Odoo. Validation failures (`VAT_MATH`, `SUM_TTC`, `ICE_FORMAT`...) can't be overridden either: if the document really doesn't add up, it's rejected.
 - **D3. Reviewer identity.** *Recommended:* a reviewer name in `.env` (`TRIMATCH_REVIEWER`), shown in the header and written to every correction and approval. Real login is out of scope for a local demo.

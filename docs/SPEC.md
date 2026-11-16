@@ -177,7 +177,7 @@ Each rule returns `pass | fail` with a reason code.
    - `PRICE_OVER_TOLERANCE`: |invoice price − PO price| / PO price > 1%
 4. **Decide:** draft only if every validation and match check passes **and** every required field has confidence ≥ 0.85 (config). Otherwise review, with all reason codes.
 5. **Draft creation:** `account.move` with `move_type='in_invoice'`, linked to the PO lines so Odoo's own bill control applies. The `ref` is the supplier invoice number, the invoice date is set, and the PDF is attached as `ir.attachment`. State stays draft. The adapter has no method that posts.
-6. **Review queue (slice):** one JSON file per document in `data/review/` with extracted data, reason codes and the source file path. It becomes a DB table with the UI in Phase 1.
+6. **Review queue (slice):** one JSON file per document in `data/review/` with extracted data, reason codes and the source file path. Phase 1 (2026-11-16): stored in PostgreSQL (`review_case`, `correction`, `review_action`), see docs/plan-phase1-review-screen.md; the JSON format stays as `--review-to json` and as the import format.
 
 Additional codes (added 2026-11-14 with the step 3 plan):
 

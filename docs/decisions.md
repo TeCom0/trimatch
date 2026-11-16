@@ -45,3 +45,11 @@ Format: date · decision · why · alternatives rejected. Newest first.
 - **"No wrong draft" is the safety metric to watch** next to accuracy: misreads must end in review, never in a wrong draft bill.
 - **Gemini calls run 4 in parallel** (config `max_parallel`), spaced by the rpm limit; brought the fresh-clone quickstart from 440 s to 271 s.
 - **Odoo host port configurable (`ODOO_PORT`)**, so a second stack can run next to the demo one.
+
+## 2026-11-16 (Phase 1 review screen plan approved)
+- **Review store in PostgreSQL**: database `trimatch_review`, own login role `trimatch`, inside the Postgres 16 container Odoo already uses (port bound to 127.0.0.1:5442). SQLAlchemy 2 typed ORM, psycopg 3, Alembic. Rejected: SQLite (would be swapped later; the brief names PostgreSQL). Not named `trimatch`: that is Odoo's database.
+- **`trimatch db init` writes a generated role password to `.env`** and resets the role to it on every run, so `.env` is the single source of truth; the value is never printed.
+- **One code path for decisions**: `pipeline.evaluate()` is used by `trimatch process` and by the review API, so a re-check in the screen can't disagree with the CLI.
+- **One case per supplier ICE + invoice number** (`case_key`); a new run refreshes an open case and never reopens an approved or rejected one.
+- **Override rules (D2)**: after corrections, `PRICE_OVER_TOLERANCE`, `QTY_BL_MISMATCH` and `LOW_CONFIDENCE` may be overridden with a written reason; `QTY_EXCEEDS_RECEIVED` and validation failures are reject-only.
+- **Reviewer identity from `.env` (`TRIMATCH_REVIEWER`)**, no login for the local demo (D3).

@@ -32,7 +32,10 @@ The seed prints `ODOO_API_KEY=...` once: put that line in `.env`.
 uv sync --project backend
 uv run --project backend playwright install chromium
 uv run --project backend python -m trimatch.odoo_adapter --check
+uv run --project backend trimatch db init
 ```
+
+`db init` creates the review store (database `trimatch_review` in the same Postgres container) and writes its generated password to `.env`.
 
 **3. Generate the 5 orders' delivery notes and invoices, then process them:**
 
@@ -41,11 +44,11 @@ uv run --project backend python -m trimatch.generate --split e2e
 uv run --project backend trimatch process "data/synthetic/e2e/*" --extractor gemini
 ```
 
-Expected: draft bills in Odoo for PO-001, PO-003 and PO-005 with the PDFs attached, and review entries in `data/review/` for PO-002 (`QTY_EXCEEDS_RECEIVED`, short delivery) and PO-004 (`PRICE_OVER_TOLERANCE`, +8%). Running it again creates nothing new. Gemini sometimes misreads one number (seen: a VAT base of 2 204,00 read as 2 204,04 on PO-003); the VAT checks then send that invoice to review (`VAT_MATH`) instead of drafting it, which is the intended behaviour.
+Expected: draft bills in Odoo for PO-001, PO-003 and PO-005 with the PDFs attached, and review cases in the review store for PO-002 (`QTY_EXCEEDS_RECEIVED`, short delivery) and PO-004 (`PRICE_OVER_TOLERANCE`, +8%). Running it again creates nothing new. Gemini sometimes misreads one number (seen: a VAT base of 2 204,00 read as 2 204,04 on PO-003); the VAT checks then send that invoice to review (`VAT_MATH`) instead of drafting it, which is the intended behaviour.
 
 Measured 2026-11-15 on a fresh clone (Windows 11, Docker images already pulled): 4 min 31 s from `docker compose up` to the processed documents. Open http://127.0.0.1:8069 (admin / admin, local only) → Invoicing → Vendors → Bills.
 
-`--extractor labels` uses the generator's ground truth instead of Gemini (no API key needed), `--dry-run` decides without writing anything, and `python -m eval.run --split test` reproduces the results below.
+`--extractor labels` uses the generator's ground truth instead of Gemini (no API key needed), `--dry-run` decides without writing anything, `--review-to json` writes review cases as files in `data/review/` instead of the store, and `python -m eval.run --split test` reproduces the results below.
 
 ## Results
 

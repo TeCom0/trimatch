@@ -272,6 +272,22 @@ class OdooClient:
             raise OdooError(f"refusing to delete bill {bill_id} in state {bill['state']}")
         self.call("account.move", "unlink", ids=[bill_id])
 
+    def add_internal_note(self, model: str, res_id: int, body_html: str) -> None:
+        """Internal note in the record's chatter (subtype mail.mt_note: no email to anyone).
+
+        Odoo 20 escapes a str body unless body_is_html=True (mail_thread.message_post);
+        callers must escape any untrusted text themselves.
+        """
+        self.call(
+            model,
+            "message_post",
+            ids=[res_id],
+            body=body_html,
+            body_is_html=True,
+            message_type="comment",
+            subtype_xmlid="mail.mt_note",
+        )
+
     def attach(self, model: str, res_id: int, files: list[Path]) -> list[int]:
         ids = []
         for f in files:

@@ -164,5 +164,33 @@ def review_import(
             typer.echo(f"{f.name}: case #{r.case_id} {r.outcome}")
 
 
+@app.command()
+def serve(
+    port: Annotated[int, typer.Option(help="Port on 127.0.0.1.")] = 8000,
+    reload: Annotated[bool, typer.Option(help="Reload on code changes (development).")] = False,
+) -> None:
+    """Run the review API (and the built review screen, if frontend/dist exists). Local only."""
+    import uvicorn
+
+    uvicorn.run(
+        "trimatch.api.app:create_app", factory=True, host="127.0.0.1", port=port, reload=reload
+    )
+
+
+@app.command()
+def openapi(
+    out: Annotated[Path, typer.Argument(help="Where to write the OpenAPI JSON.")],
+) -> None:
+    """Write the review API's OpenAPI document (the frontend generates its types from it)."""
+    import json
+    from unittest.mock import MagicMock
+
+    from trimatch.api.app import create_app
+
+    spec = create_app(sessions=MagicMock(), odoo=MagicMock(), frontend_dist=None).openapi()
+    out.write_text(json.dumps(spec, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    typer.echo(f"wrote {out}")
+
+
 if __name__ == "__main__":
     app()

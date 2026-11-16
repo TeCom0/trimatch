@@ -164,6 +164,23 @@ def review_import(
             typer.echo(f"{f.name}: case #{r.case_id} {r.outcome}")
 
 
+@review_app.command("clear")
+def review_clear(
+    yes: Annotated[bool, typer.Option("--yes", help="Confirm: delete every case.")] = False,
+) -> None:
+    """Delete all review cases, corrections and approvals (to replay the demo). Odoo is untouched."""
+    from sqlalchemy import delete
+
+    from trimatch.store.db import session_factory
+    from trimatch.store.models import ReviewCase
+
+    if not yes:
+        raise typer.BadParameter("this deletes every review case and its corrections; add --yes")
+    with session_factory().begin() as s:
+        n = s.execute(delete(ReviewCase)).rowcount
+    typer.echo(f"deleted {n} review case(s) with their corrections and approvals")
+
+
 @app.command()
 def serve(
     port: Annotated[int, typer.Option(help="Port on 127.0.0.1.")] = 8000,

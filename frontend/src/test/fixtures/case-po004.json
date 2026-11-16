@@ -1,0 +1,986 @@
+{
+ "id": 2,
+ "supplier_name": "Distribution Anfa SARL",
+ "supplier_ice": "999639125000124",
+ "invoice_number": "FA-DA-2026-0159",
+ "po_ref": "PO-004",
+ "status": "open",
+ "reason_codes": [
+  "PRICE_OVER_TOLERANCE"
+ ],
+ "created_at": "2026-11-16T13:17:13.990152Z",
+ "updated_at": "2026-11-16T13:43:52.051669Z",
+ "decided_at": null,
+ "reasons": [
+  {
+   "code": "PRICE_OVER_TOLERANCE",
+   "ok": false,
+   "detail": "ANF-HT05: invoiced 99.36, PO price 92 (+8.0% vs 1.0% allowed)",
+   "doc": "invoice",
+   "line": 2,
+   "title": "Price differs from the PO",
+   "hint": "The unit price is outside the tolerance. Approve with a reason if the new price was agreed, otherwise reject.",
+   "overridable": true,
+   "fields": [
+    "lines.2.unit_price_ht"
+   ]
+  }
+ ],
+ "invoice": {
+  "doc_type": "invoice",
+  "supplier": {
+   "name": {
+    "value": "Distribution Anfa SARL",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.16664,
+     "y0": 0.04376,
+     "x1": 0.41898,
+     "y1": 0.06247
+    }
+   },
+   "ice": {
+    "value": "999639125000124",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.19956,
+     "y0": 0.09428,
+     "x1": 0.32474,
+     "y1": 0.10586
+    }
+   },
+   "if_number": {
+    "value": "45071839",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.35906,
+     "y0": 0.09428,
+     "x1": 0.42503,
+     "y1": 0.10586
+    }
+   },
+   "tp_number": {
+    "value": "35762048",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.3626,
+     "y0": 0.10806,
+     "x1": 0.43131,
+     "y1": 0.11964
+    }
+   },
+   "rc": {
+    "value": "574310",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.27458,
+     "y0": 0.10806,
+     "x1": 0.32258,
+     "y1": 0.11964
+    }
+   }
+  },
+  "customer": {
+   "name": {
+    "value": "Riad Atlas Hospitality SARL",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.52257,
+     "y0": 0.22715,
+     "x1": 0.75652,
+     "y1": 0.2423
+    }
+   },
+   "ice": {
+    "value": "999417302000177",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.55549,
+     "y0": 0.2741,
+     "x1": 0.67864,
+     "y1": 0.28569
+    }
+   },
+   "if_number": null,
+   "tp_number": null,
+   "rc": null
+  },
+  "number": {
+   "value": "FA-DA-2026-0159",
+   "confidence": 1.0,
+   "source": {
+    "page": 1,
+    "x0": 0.79999,
+    "y0": 0.07834,
+    "x1": 0.93333,
+    "y1": 0.0917
+   }
+  },
+  "date": {
+   "value": "2026-11-10",
+   "confidence": 1.0,
+   "source": {
+    "page": 1,
+    "x0": 0.85423,
+    "y0": 0.09574,
+    "x1": 0.93333,
+    "y1": 0.1091
+   }
+  },
+  "due_date": {
+   "value": "2027-01-09",
+   "confidence": 1.0,
+   "source": {
+    "page": 1,
+    "x0": 0.84832,
+    "y0": 0.14794,
+    "x1": 0.93333,
+    "y1": 0.1613
+   }
+  },
+  "payment_terms": {
+   "value": "Paiement à 60 jours par chèque",
+   "confidence": 1.0,
+   "source": {
+    "page": 1,
+    "x0": 0.24895,
+    "y0": 0.61568,
+    "x1": 0.47651,
+    "y1": 0.62904
+   }
+  },
+  "po_ref": {
+   "value": "PO-004",
+   "confidence": 1.0,
+   "source": {
+    "page": 1,
+    "x0": 0.8749,
+    "y0": 0.11314,
+    "x1": 0.93333,
+    "y1": 0.1265
+   }
+  },
+  "bl_refs": [
+   {
+    "value": "BL-DA-2026-0160",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.79987,
+     "y0": 0.13054,
+     "x1": 0.93333,
+     "y1": 0.1439
+    }
+   }
+  ],
+  "currency": "MAD",
+  "lines": [
+   {
+    "description": {
+     "value": "Eau minérale 1,5 L, pack de 6",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.20419,
+      "y0": 0.3515,
+      "x1": 0.42341,
+      "y1": 0.36486
+     }
+    },
+    "supplier_ref": {
+     "value": "ANF-EM15",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.07617,
+      "y0": 0.3515,
+      "x1": 0.1559,
+      "y1": 0.36486
+     }
+    },
+    "quantity": {
+     "value": "40",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.52421,
+      "y0": 0.3515,
+      "x1": 0.54458,
+      "y1": 0.36486
+     }
+    },
+    "unit": {
+     "value": "pack",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.5636,
+      "y0": 0.3515,
+      "x1": 0.60035,
+      "y1": 0.36486
+     }
+    },
+    "unit_price_ht": {
+     "value": "21.0",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.6799,
+      "y0": 0.3515,
+      "x1": 0.72044,
+      "y1": 0.36486
+     }
+    },
+    "vat_rate": {
+     "value": "20",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.73946,
+      "y0": 0.3515,
+      "x1": 0.7794,
+      "y1": 0.36486
+     }
+    },
+    "exemption_ref": null,
+    "line_total_ht": {
+     "value": "840.00",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.86966,
+      "y0": 0.3515,
+      "x1": 0.92382,
+      "y1": 0.36486
+     }
+    }
+   },
+   {
+    "description": {
+     "value": "Soda 33 cl, carton de 24",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.20419,
+      "y0": 0.38056,
+      "x1": 0.38981,
+      "y1": 0.39392
+     }
+    },
+    "supplier_ref": {
+     "value": "ANF-SD24",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.07617,
+      "y0": 0.38056,
+      "x1": 0.15747,
+      "y1": 0.39392
+     }
+    },
+    "quantity": {
+     "value": "12",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.52836,
+      "y0": 0.38056,
+      "x1": 0.54458,
+      "y1": 0.39392
+     }
+    },
+    "unit": {
+     "value": "carton",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.5636,
+      "y0": 0.38056,
+      "x1": 0.61214,
+      "y1": 0.39392
+     }
+    },
+    "unit_price_ht": {
+     "value": "110.0",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.67349,
+      "y0": 0.38056,
+      "x1": 0.72044,
+      "y1": 0.39392
+     }
+    },
+    "vat_rate": {
+     "value": "20",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.73946,
+      "y0": 0.38056,
+      "x1": 0.7794,
+      "y1": 0.39392
+     }
+    },
+    "exemption_ref": null,
+    "line_total_ht": {
+     "value": "1320.00",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.86086,
+      "y0": 0.38056,
+      "x1": 0.92382,
+      "y1": 0.39392
+     }
+    }
+   },
+   {
+    "description": {
+     "value": "Huile de table 5 L",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.20419,
+      "y0": 0.40963,
+      "x1": 0.33518,
+      "y1": 0.42299
+     }
+    },
+    "supplier_ref": {
+     "value": "ANF-HT05",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.07617,
+      "y0": 0.40963,
+      "x1": 0.1571,
+      "y1": 0.42299
+     }
+    },
+    "quantity": {
+     "value": "15",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.52862,
+      "y0": 0.40963,
+      "x1": 0.54458,
+      "y1": 0.42299
+     }
+    },
+    "unit": {
+     "value": "bidon",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.5636,
+      "y0": 0.40963,
+      "x1": 0.60598,
+      "y1": 0.42299
+     }
+    },
+    "unit_price_ht": {
+     "value": "99.36",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.67715,
+      "y0": 0.40963,
+      "x1": 0.72044,
+      "y1": 0.42299
+     }
+    },
+    "vat_rate": {
+     "value": "10",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.73946,
+      "y0": 0.40963,
+      "x1": 0.77617,
+      "y1": 0.42299
+     }
+    },
+    "exemption_ref": null,
+    "line_total_ht": {
+     "value": "1490.40",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.8596,
+      "y0": 0.40963,
+      "x1": 0.92382,
+      "y1": 0.42299
+     }
+    }
+   },
+   {
+    "description": {
+     "value": "Riz usiné, sac de 5 kg",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.20419,
+      "y0": 0.43869,
+      "x1": 0.3678,
+      "y1": 0.45205
+     }
+    },
+    "supplier_ref": {
+     "value": "ANF-RZ05",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.07617,
+      "y0": 0.43869,
+      "x1": 0.15578,
+      "y1": 0.45205
+     }
+    },
+    "quantity": {
+     "value": "10",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.52802,
+      "y0": 0.43869,
+      "x1": 0.54458,
+      "y1": 0.45205
+     }
+    },
+    "unit": {
+     "value": "sac",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.5636,
+      "y0": 0.43869,
+      "x1": 0.5901,
+      "y1": 0.45205
+     }
+    },
+    "unit_price_ht": {
+     "value": "55.0",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.67762,
+      "y0": 0.43869,
+      "x1": 0.72044,
+      "y1": 0.45205
+     }
+    },
+    "vat_rate": {
+     "value": "10",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.73946,
+      "y0": 0.43869,
+      "x1": 0.77617,
+      "y1": 0.45205
+     }
+    },
+    "exemption_ref": null,
+    "line_total_ht": {
+     "value": "550.00",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.8709,
+      "y0": 0.43869,
+      "x1": 0.92382,
+      "y1": 0.45205
+     }
+    }
+   }
+  ],
+  "total_ht": {
+   "value": "4200.40",
+   "confidence": 1.0,
+   "source": {
+    "page": 1,
+    "x0": 0.85619,
+    "y0": 0.48222,
+    "x1": 0.92382,
+    "y1": 0.49558
+   }
+  },
+  "vat": [
+   {
+    "rate": {
+     "value": "10",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.5976,
+      "y0": 0.50566,
+      "x1": 0.63431,
+      "y1": 0.51902
+     }
+    },
+    "base_ht": {
+     "value": "2040.40",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.68571,
+      "y0": 0.50566,
+      "x1": 0.75333,
+      "y1": 0.51902
+     }
+    },
+    "amount": {
+     "value": "204.04",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.8697,
+      "y0": 0.50566,
+      "x1": 0.92382,
+      "y1": 0.51902
+     }
+    }
+   },
+   {
+    "rate": {
+     "value": "20",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.5976,
+      "y0": 0.5291,
+      "x1": 0.63754,
+      "y1": 0.54246
+     }
+    },
+    "base_ht": {
+     "value": "2160.00",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.68894,
+      "y0": 0.5291,
+      "x1": 0.75194,
+      "y1": 0.54246
+     }
+    },
+    "amount": {
+     "value": "432.00",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.8696,
+      "y0": 0.5291,
+      "x1": 0.92382,
+      "y1": 0.54246
+     }
+    }
+   }
+  ],
+  "total_ttc": {
+   "value": "4836.44",
+   "confidence": 1.0,
+   "source": {
+    "page": 1,
+    "x0": 0.84129,
+    "y0": 0.55432,
+    "x1": 0.92382,
+    "y1": 0.57035
+   }
+  }
+ },
+ "bl": {
+  "doc_type": "delivery_note",
+  "supplier": {
+   "name": {
+    "value": "Distribution Anfa SARL",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.16664,
+     "y0": 0.04376,
+     "x1": 0.41898,
+     "y1": 0.06247
+    }
+   },
+   "ice": {
+    "value": "999639125000124",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.19956,
+     "y0": 0.09428,
+     "x1": 0.32474,
+     "y1": 0.10586
+    }
+   },
+   "if_number": {
+    "value": "45071839",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.35906,
+     "y0": 0.09428,
+     "x1": 0.42503,
+     "y1": 0.10586
+    }
+   },
+   "tp_number": {
+    "value": "35762048",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.3626,
+     "y0": 0.10806,
+     "x1": 0.43131,
+     "y1": 0.11964
+    }
+   },
+   "rc": {
+    "value": "574310",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.27458,
+     "y0": 0.10806,
+     "x1": 0.32258,
+     "y1": 0.11964
+    }
+   }
+  },
+  "customer": {
+   "name": {
+    "value": "Riad Atlas Hospitality SARL",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.52257,
+     "y0": 0.19235,
+     "x1": 0.75652,
+     "y1": 0.2075
+    }
+   },
+   "ice": {
+    "value": "999417302000177",
+    "confidence": 1.0,
+    "source": {
+     "page": 1,
+     "x0": 0.55549,
+     "y0": 0.23931,
+     "x1": 0.67864,
+     "y1": 0.25089
+    }
+   },
+   "if_number": null,
+   "tp_number": null,
+   "rc": null
+  },
+  "number": {
+   "value": "BL-DA-2026-0160",
+   "confidence": 1.0,
+   "source": {
+    "page": 1,
+    "x0": 0.79987,
+    "y0": 0.07834,
+    "x1": 0.93333,
+    "y1": 0.0917
+   }
+  },
+  "date": {
+   "value": "2026-11-07",
+   "confidence": 1.0,
+   "source": {
+    "page": 1,
+    "x0": 0.8522,
+    "y0": 0.09574,
+    "x1": 0.93333,
+    "y1": 0.1091
+   }
+  },
+  "po_ref": {
+   "value": "PO-004",
+   "confidence": 1.0,
+   "source": {
+    "page": 1,
+    "x0": 0.8749,
+    "y0": 0.11314,
+    "x1": 0.93333,
+    "y1": 0.1265
+   }
+  },
+  "lines": [
+   {
+    "description": {
+     "value": "Eau minérale 1,5 L, pack de 6",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.26956,
+      "y0": 0.3167,
+      "x1": 0.48879,
+      "y1": 0.33006
+     }
+    },
+    "supplier_ref": {
+     "value": "ANF-EM15",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.07617,
+      "y0": 0.3167,
+      "x1": 0.1559,
+      "y1": 0.33006
+     }
+    },
+    "quantity": {
+     "value": "40",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.77316,
+      "y0": 0.3167,
+      "x1": 0.79353,
+      "y1": 0.33006
+     }
+    },
+    "unit": {
+     "value": "pack",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.81255,
+      "y0": 0.3167,
+      "x1": 0.8493,
+      "y1": 0.33006
+     }
+    },
+    "unit_price_ht": null,
+    "vat_rate": null,
+    "exemption_ref": null,
+    "line_total_ht": null
+   },
+   {
+    "description": {
+     "value": "Soda 33 cl, carton de 24",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.26956,
+      "y0": 0.34576,
+      "x1": 0.45519,
+      "y1": 0.35913
+     }
+    },
+    "supplier_ref": {
+     "value": "ANF-SD24",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.07617,
+      "y0": 0.34576,
+      "x1": 0.15747,
+      "y1": 0.35913
+     }
+    },
+    "quantity": {
+     "value": "12",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.77731,
+      "y0": 0.34576,
+      "x1": 0.79353,
+      "y1": 0.35913
+     }
+    },
+    "unit": {
+     "value": "carton",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.81255,
+      "y0": 0.34576,
+      "x1": 0.8611,
+      "y1": 0.35913
+     }
+    },
+    "unit_price_ht": null,
+    "vat_rate": null,
+    "exemption_ref": null,
+    "line_total_ht": null
+   },
+   {
+    "description": {
+     "value": "Huile de table 5 L",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.26956,
+      "y0": 0.37483,
+      "x1": 0.40056,
+      "y1": 0.38819
+     }
+    },
+    "supplier_ref": {
+     "value": "ANF-HT05",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.07617,
+      "y0": 0.37483,
+      "x1": 0.1571,
+      "y1": 0.38819
+     }
+    },
+    "quantity": {
+     "value": "15",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.77757,
+      "y0": 0.37483,
+      "x1": 0.79353,
+      "y1": 0.38819
+     }
+    },
+    "unit": {
+     "value": "bidon",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.81255,
+      "y0": 0.37483,
+      "x1": 0.85493,
+      "y1": 0.38819
+     }
+    },
+    "unit_price_ht": null,
+    "vat_rate": null,
+    "exemption_ref": null,
+    "line_total_ht": null
+   },
+   {
+    "description": {
+     "value": "Riz usiné, sac de 5 kg",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.26956,
+      "y0": 0.40389,
+      "x1": 0.43318,
+      "y1": 0.41725
+     }
+    },
+    "supplier_ref": {
+     "value": "ANF-RZ05",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.07617,
+      "y0": 0.40389,
+      "x1": 0.15578,
+      "y1": 0.41725
+     }
+    },
+    "quantity": {
+     "value": "10",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.77698,
+      "y0": 0.40389,
+      "x1": 0.79353,
+      "y1": 0.41725
+     }
+    },
+    "unit": {
+     "value": "sac",
+     "confidence": 1.0,
+     "source": {
+      "page": 1,
+      "x0": 0.81255,
+      "y0": 0.40389,
+      "x1": 0.83905,
+      "y1": 0.41725
+     }
+    },
+    "unit_price_ht": null,
+    "vat_rate": null,
+    "exemption_ref": null,
+    "line_total_ht": null
+   }
+  ]
+ },
+ "odoo_po": {
+  "id": 4,
+  "name": "PO-004",
+  "partner_id": 7,
+  "state": "purchase",
+  "lines": [
+   {
+    "id": 13,
+    "default_code": "ANF-EM15",
+    "product_name": "Eau minérale 1,5 L, pack de 6",
+    "uom": "pack",
+    "qty_ordered": "4E+1",
+    "qty_received": "4E+1",
+    "qty_invoiced": "0",
+    "price_unit": "21"
+   },
+   {
+    "id": 14,
+    "default_code": "ANF-SD24",
+    "product_name": "Soda 33 cl, carton de 24",
+    "uom": "carton",
+    "qty_ordered": "12",
+    "qty_received": "12",
+    "qty_invoiced": "0",
+    "price_unit": "1.1E+2"
+   },
+   {
+    "id": 15,
+    "default_code": "ANF-HT05",
+    "product_name": "Huile de table 5 L",
+    "uom": "bidon",
+    "qty_ordered": "15",
+    "qty_received": "15",
+    "qty_invoiced": "0",
+    "price_unit": "92"
+   },
+   {
+    "id": 16,
+    "default_code": "ANF-RZ05",
+    "product_name": "Riz usiné, sac de 5 kg",
+    "uom": "sac",
+    "qty_ordered": "1E+1",
+    "qty_received": "1E+1",
+    "qty_invoiced": "0",
+    "price_unit": "55"
+   }
+  ]
+ },
+ "documents": {
+  "invoice": {
+   "file_name": "e2e_PO-004_invoice_clean.pdf",
+   "media_type": "application/pdf",
+   "pages": 1
+  },
+  "bl": {
+   "file_name": "e2e_PO-004_bl_clean.pdf",
+   "media_type": "application/pdf",
+   "pages": 1
+  }
+ },
+ "corrections": [],
+ "actions": [],
+ "first_opened_at": "2026-11-16T13:43:52.052705Z"
+}

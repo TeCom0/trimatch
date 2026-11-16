@@ -53,3 +53,10 @@ Format: date · decision · why · alternatives rejected. Newest first.
 - **One case per supplier ICE + invoice number** (`case_key`); a new run refreshes an open case and never reopens an approved or rejected one.
 - **Override rules (D2)**: after corrections, `PRICE_OVER_TOLERANCE`, `QTY_BL_MISMATCH` and `LOW_CONFIDENCE` may be overridden with a written reason; `QTY_EXCEEDS_RECEIVED` and validation failures are reject-only.
 - **Reviewer identity from `.env` (`TRIMATCH_REVIEWER`)**, no login for the local demo (D3).
+
+## 2026-11-16 (review screen front end)
+- **Front end: Vite 8 + React 19 + TypeScript 7 (strict), oxlint**, as the official Vite react-ts template ships them today. **TanStack Query** for server state (caching, keep-previous-data while re-checking), **React Router** for two routes. No UI kit: plain CSS with light/dark variables.
+- **API types are generated, not hand-written**: `trimatch openapi` writes frontend/openapi.json, openapi-typescript generates src/api/schema.d.ts, openapi-fetch gives a typed client. CI fails if either file is stale. openapi-typescript 7 needs the TypeScript 5 compiler API, so `npm run gen:api` runs it through `npx` pinned to typescript 5.9.3; the app itself type-checks with TS 7.
+- **One process for the demo**: `trimatch serve` serves the built app and the API on 127.0.0.1:8000 (no CORS, no second server). Vite's dev server proxies /api for development.
+- **Invoice lines as cards**, not a wide table: the right-hand pane is ~600 px, and a 7-column table needed horizontal scrolling that hid the totals and the PO comparison.
+

@@ -9,6 +9,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from trimatch.schema import DeliveryNote, Invoice
 from trimatch.store.models import ActionKind, CaseStatus
 
 
@@ -135,8 +136,8 @@ class ActionOut(BaseModel):
 
 class CaseDetail(CaseSummary):
     reasons: list[FailedCheck] = Field(description="Failed checks when the case was created.")
-    invoice: dict[str, Any] = Field(description="schema.Invoice as extracted (JSON).")
-    bl: dict[str, Any] | None = Field(description="schema.DeliveryNote as extracted (JSON).")
+    invoice: Invoice = Field(description="As extracted (corrections are not applied here).")
+    bl: DeliveryNote | None = Field(description="As extracted.")
     odoo_po: PoOut | None
     documents: dict[str, DocumentInfo]
     corrections: list[CorrectionOut]

@@ -20,6 +20,7 @@ build/
 
 # Node (frontend, Phase 1)
 node_modules/
+frontend/dist/
 
 # Odoo local volumes
 odoo/volumes/

@@ -224,6 +224,11 @@ export interface components {
             x1: number;
             /** Y1 */
             y1: number;
+            /**
+             * Approximate
+             * @default false
+             */
+            approximate: boolean;
         };
         /** CaseDetail */
         CaseDetail: {

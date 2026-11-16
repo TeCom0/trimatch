@@ -6,17 +6,16 @@ from __future__ import annotations
 import hashlib
 import io
 import mimetypes
-import threading
 import uuid
 from pathlib import Path
 
 import pypdfium2 as pdfium
 
 from trimatch.config import REPO_ROOT
+from trimatch.pdfium_lock import PDFIUM_LOCK
 
 CACHE_DIR = REPO_ROOT / "data" / "cache" / "pages"
 SCALE = 2.0  # 144 dpi: sharp enough to read small print when zoomed
-_LOCK = threading.Lock()  # pdfium is not thread-safe
 
 
 def media_type(path: Path) -> str:
@@ -26,7 +25,7 @@ def media_type(path: Path) -> str:
 def page_count(path: Path) -> int:
     if media_type(path) != "application/pdf":
         return 1
-    with _LOCK:
+    with PDFIUM_LOCK:
         pdf = pdfium.PdfDocument(path)
         try:
             return len(pdf)
@@ -49,7 +48,7 @@ def page_image(path: Path, page: int, cache_dir: Path | None = None) -> tuple[by
     cached = cache_dir / f"{key}.png"
     if cached.is_file():
         return cached.read_bytes(), "image/png"
-    with _LOCK:
+    with PDFIUM_LOCK:
         pdf = pdfium.PdfDocument(path)
         try:
             if not 1 <= page <= len(pdf):

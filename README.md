@@ -58,11 +58,17 @@ uv run --project backend trimatch serve
 
 Open http://127.0.0.1:8000. Each flagged invoice shows the document with a box on every extracted value, the failed checks in words, and the values as read next to the PO's ordered/received quantities and prices. Fix a misread value and the checks re-run; **Approve** creates the draft bill in Odoo (with an internal note naming the reviewer, the corrections and the reason), **Reject** closes the case with a reason. A price difference or a delivery-note mismatch can be approved with a written reason; a bill for more than was received cannot. Corrections are stored as labelled data. Set `TRIMATCH_REVIEWER=<your name>` in `.env` first. For UI development run `npm --prefix frontend run dev` (port 5173, API proxied to 8000).
 
+![Review demo](docs/img/review-demo.gif)
+*The three cases below, end to end: fix a misread value, approve over a price change with a reason, reject a short delivery.*
+
 ![Review queue](docs/img/review-queue.png)
 *The queue after a Gemini run on the 5 e2e orders: two invoices became drafts, three are waiting.*
 
+![Misread VAT base](docs/img/review-misread.png)
+*PO-003: Gemini read the 10% VAT base 2 204,00 as 2 204,04, so VAT_MATH fails (red). The value isn't printed as read, so its box is an estimate (dashed); every other box comes from the PDF's text layer. Typing 2204.00 re-runs the checks and enables Approve.*
+
 ![Price change: approve with a reason](docs/img/review-override.png)
-*PO-004: the oil price is 8% over the PO. The check explains itself; approving needs a written reason, which also goes into the note on the Odoo draft.*
+*PO-004: the oil price is 8% over the PO; the red box is on the invoiced 99,36. The check explains itself; approving needs a written reason, which also goes into the note on the Odoo draft.*
 
 ![Short delivery: reject](docs/img/review-short-delivery.png)
 *PO-002: the reviewer corrected a misread total (4 700,05 → 4 700,00); the arithmetic checks now pass, but the invoice bills 20 kg of merlan when 14 kg were received, which can't be overridden.*

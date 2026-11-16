@@ -17,7 +17,9 @@ Newest first. One entry per work session: date, what was done, what's next.
 - PR 4 merged (#7). Youness approved the box fix.
 - Box snapping built (`extract/snap.py`): the text Gemini copied is looked up in the PDF text layer (pypdfium2 char boxes, spaces ignored, word-aligned); values printed once are anchors and give the page's median shift; repeated values ("10 %") take the occurrence on their table line's row, else the nearest to the shift-corrected Gemini box (max 0.12 page); not found -> shifted Gemini box marked `approximate` (new `Box.approximate`, dashed in the screen). Scans keep Gemini's box, approximate.
 - `eval/boxes.py` (cached responses only, never calls the API). Dev split (tuning check, first try, nothing changed after it): snapped boxes on the value for 1309/1310 fields. **Reported, test split, 40 clean PDFs, 1504 fields, code fb48cf2:** box centre on the right value 100.0% snapped vs 33.0% Gemini; IoU >= 0.5 99.1% vs 16.7%; 1503 marked exact, 0 of them wrong. Report: eval/results/2026-11-16_fb48cf2_boxes_test.md.
-- Next: re-record the demo (screenshots + GIF) with snapped boxes; then the remaining Phase 1 items.
+- Found while re-recording: the pipeline extracts files in 4 threads and pdfium is not thread-safe ("Data format error" on the text layer read). One process-wide lock (`trimatch/pdfium_lock.py`) now guards every pdfium call (snapping and page images).
+- Demo re-recorded on a reset stack (same Gemini cache, same 2 drafts + 3 cases): boxes sit on the printed values; the misread PO-003 base is dashed. GIF (800 px, 6 fps, 4.2 MB) and screenshots in the README.
+- Next: remaining Phase 1 items (duplicate-invoice scenario, UBL path, local OCR/extractor comparison, which also brings word boxes for scans, real held-out documents).
 
 ## 2026-11-15
 - Step 5 (eval) done. `eval.run` writes dated reports; first reported result on the held-out test split (seed 2, 200 docs, gemini-3.5-flash-lite, code 7b4bdbc): field accuracy 99.2%, document accuracy 86.5%. e2e dry run: 8/10 decisions exact, 0 wrong drafts (2 clean cases flagged by VAT/total checks after a misread number). Reports in eval/results/, numbers in README.

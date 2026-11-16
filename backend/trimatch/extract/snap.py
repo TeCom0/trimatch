@@ -29,6 +29,7 @@ from pathlib import Path
 
 import pypdfium2 as pdfium
 
+from trimatch.pdfium_lock import PDFIUM_LOCK
 from trimatch.schema import Box
 
 MAX_DISTANCE = 0.12  # page fractions: beyond this an occurrence is not "the same value"
@@ -75,16 +76,17 @@ def _is_sep(ch: str) -> bool:
 
 def page_text(pdf_path: Path, page_index: int = 0) -> PageText | None:
     """The text layer of a page, or None if the file has none (scans)."""
-    pdf = pdfium.PdfDocument(pdf_path)
-    try:
-        page = pdf[page_index]
-        w, h = page.get_size()
-        tp = page.get_textpage()
-        n = tp.count_chars()
-        raw = [tp.get_text_range(i, 1) or " " for i in range(n)]
-        boxes = [tp.get_charbox(i) for i in range(n)]
-    finally:
-        pdf.close()
+    with PDFIUM_LOCK:  # the pipeline extracts several files in parallel threads
+        pdf = pdfium.PdfDocument(pdf_path)
+        try:
+            page = pdf[page_index]
+            w, h = page.get_size()
+            tp = page.get_textpage()
+            n = tp.count_chars()
+            raw = [tp.get_text_range(i, 1) or " " for i in range(n)]
+            boxes = [tp.get_charbox(i) for i in range(n)]
+        finally:
+            pdf.close()
     chars: list[str] = []
     rects: list[Rect] = []
     starts: list[bool] = []

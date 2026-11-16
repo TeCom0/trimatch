@@ -1,0 +1,73 @@
+{
+ "action": "review",
+ "failed": [
+  {
+   "code": "PRICE_OVER_TOLERANCE",
+   "ok": false,
+   "detail": "ANF-HT05: invoiced 99.36, PO price 92 (+8.0% vs 1.0% allowed)",
+   "doc": "invoice",
+   "line": 2,
+   "title": "Price differs from the PO",
+   "hint": "The unit price is outside the tolerance. Approve with a reason if the new price was agreed, otherwise reject.",
+   "overridable": true,
+   "fields": [
+    "lines.2.unit_price_ht"
+   ]
+  }
+ ],
+ "blocking": [],
+ "overridable": [
+  "PRICE_OVER_TOLERANCE"
+ ],
+ "can_approve": true,
+ "needs_reason": true,
+ "already_drafted": null,
+ "po": {
+  "id": 4,
+  "name": "PO-004",
+  "partner_id": 7,
+  "state": "purchase",
+  "lines": [
+   {
+    "id": 13,
+    "default_code": "ANF-EM15",
+    "product_name": "Eau minérale 1,5 L, pack de 6",
+    "uom": "pack",
+    "qty_ordered": "4E+1",
+    "qty_received": "4E+1",
+    "qty_invoiced": "0",
+    "price_unit": "21"
+   },
+   {
+    "id": 14,
+    "default_code": "ANF-SD24",
+    "product_name": "Soda 33 cl, carton de 24",
+    "uom": "carton",
+    "qty_ordered": "12",
+    "qty_received": "12",
+    "qty_invoiced": "0",
+    "price_unit": "1.1E+2"
+   },
+   {
+    "id": 15,
+    "default_code": "ANF-HT05",
+    "product_name": "Huile de table 5 L",
+    "uom": "bidon",
+    "qty_ordered": "15",
+    "qty_received": "15",
+    "qty_invoiced": "0",
+    "price_unit": "92"
+   },
+   {
+    "id": 16,
+    "default_code": "ANF-RZ05",
+    "product_name": "Riz usiné, sac de 5 kg",
+    "uom": "sac",
+    "qty_ordered": "1E+1",
+    "qty_received": "1E+1",
+    "qty_invoiced": "0",
+    "price_unit": "55"
+   }
+  ]
+ }
+}

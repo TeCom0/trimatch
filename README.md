@@ -48,6 +48,16 @@ Expected: draft bills in Odoo for PO-001, PO-003 and PO-005 with the PDFs attach
 
 Measured 2026-11-15 on a fresh clone (Windows 11, Docker images already pulled): 4 min 31 s from `docker compose up` to the processed documents. Open http://127.0.0.1:8069 (admin / admin, local only) → Invoicing → Vendors → Bills.
 
+**4. Review screen** (needs Node 24):
+
+```
+npm --prefix frontend ci
+npm --prefix frontend run build
+uv run --project backend trimatch serve
+```
+
+Open http://127.0.0.1:8000. Each flagged invoice shows the document with a box on every extracted value, the failed checks in words, and the values as read next to the PO's ordered/received quantities and prices. Fix a misread value and the checks re-run; **Approve** creates the draft bill in Odoo (with an internal note naming the reviewer, the corrections and the reason), **Reject** closes the case with a reason. A price difference or a delivery-note mismatch can be approved with a written reason; a bill for more than was received cannot. Corrections are stored as labelled data. Set `TRIMATCH_REVIEWER=<your name>` in `.env` first. For UI development run `npm --prefix frontend run dev` (port 5173, API proxied to 8000).
+
 `--extractor labels` uses the generator's ground truth instead of Gemini (no API key needed), `--dry-run` decides without writing anything, `--review-to json` writes review cases as files in `data/review/` instead of the store, and `python -m eval.run --split test` reproduces the results below.
 
 ## Results

@@ -1,0 +1,30 @@
+[
+ {
+  "id": 1,
+  "supplier_name": "Boucherie-Marée Al Waha SARL",
+  "supplier_ice": "999528614000104",
+  "invoice_number": "FA-AW-2026-0691",
+  "po_ref": "PO-002",
+  "status": "open",
+  "reason_codes": [
+   "QTY_EXCEEDS_RECEIVED"
+  ],
+  "created_at": "2026-11-16T13:17:13.990152Z",
+  "updated_at": "2026-11-16T13:18:15.033573Z",
+  "decided_at": null
+ },
+ {
+  "id": 2,
+  "supplier_name": "Distribution Anfa SARL",
+  "supplier_ice": "999639125000124",
+  "invoice_number": "FA-DA-2026-0159",
+  "po_ref": "PO-004",
+  "status": "open",
+  "reason_codes": [
+   "PRICE_OVER_TOLERANCE"
+  ],
+  "created_at": "2026-11-16T13:17:13.990152Z",
+  "updated_at": "2026-11-16T13:43:52.051669Z",
+  "decided_at": null
+ }
+]

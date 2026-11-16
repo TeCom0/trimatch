@@ -1,0 +1,1929 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "trimatch review API",
+    "summary": "Review queue for invoices the three-way match could not draft on its own.",
+    "version": "1"
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Api Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/meta": {
+      "get": {
+        "summary": "Meta",
+        "operationId": "meta_api_meta_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meta"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviews": {
+      "get": {
+        "summary": "List Cases",
+        "operationId": "list_cases_api_reviews_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "open",
+                "approved",
+                "rejected",
+                "all"
+              ],
+              "type": "string",
+              "default": "open",
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CaseSummary"
+                  },
+                  "title": "Response List Cases Api Reviews Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviews/{case_id}": {
+      "get": {
+        "summary": "Get Case",
+        "operationId": "get_case_api_reviews__case_id__get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    },
+    "/api/reviews/{case_id}/documents/{doc}/pages/{page}": {
+      "get": {
+        "summary": "Page Image",
+        "operationId": "page_image_api_reviews__case_id__documents__doc__pages__page__get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "doc",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "invoice",
+                "bl"
+              ],
+              "type": "string",
+              "title": "Doc"
+            }
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Page"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/png": {},
+              "image/jpeg": {}
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    },
+    "/api/reviews/{case_id}/recheck": {
+      "post": {
+        "summary": "Recheck",
+        "description": "Re-run validation and matching on the corrected values. Writes nothing.",
+        "operationId": "recheck_api_reviews__case_id__recheck_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecheckIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecheckOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    },
+    "/api/reviews/{case_id}/approve": {
+      "post": {
+        "summary": "Approve",
+        "description": "Log corrections, re-check, create the DRAFT vendor bill in Odoo. Never posts.",
+        "operationId": "approve_api_reviews__case_id__approve_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApproveOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    },
+    "/api/reviews/{case_id}/reject": {
+      "post": {
+        "summary": "Reject",
+        "description": "Close the case without a bill, with a reason (e.g. ask for a credit note).",
+        "operationId": "reject_api_reviews__case_id__reject_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RejectOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActionKind": {
+        "type": "string",
+        "enum": [
+          "approve",
+          "reject"
+        ],
+        "title": "ActionKind"
+      },
+      "ActionOut": {
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/ActionKind"
+          },
+          "reviewer": {
+            "type": "string",
+            "title": "Reviewer"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "overridden_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Overridden Codes"
+          },
+          "odoo_bill_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Odoo Bill Id"
+          },
+          "odoo_bill_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Odoo Bill Name"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "reviewer",
+          "reason",
+          "overridden_codes",
+          "odoo_bill_id",
+          "odoo_bill_name",
+          "created_at"
+        ],
+        "title": "ActionOut"
+      },
+      "ApproveIn": {
+        "properties": {
+          "edits": {
+            "items": {
+              "$ref": "#/components/schemas/EditIn"
+            },
+            "type": "array",
+            "title": "Edits",
+            "default": []
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "description": "Required when approving over an overridable check."
+          }
+        },
+        "type": "object",
+        "title": "ApproveIn"
+      },
+      "ApproveOut": {
+        "properties": {
+          "case": {
+            "$ref": "#/components/schemas/CaseSummary"
+          },
+          "bill": {
+            "$ref": "#/components/schemas/BillRef"
+          },
+          "corrections": {
+            "type": "integer",
+            "title": "Corrections"
+          },
+          "overridden": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Overridden"
+          },
+          "note_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case",
+          "bill",
+          "corrections",
+          "overridden",
+          "note_error"
+        ],
+        "title": "ApproveOut"
+      },
+      "BillRef": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "amount_total": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "BillRef"
+      },
+      "Box": {
+        "properties": {
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "x0": {
+            "type": "number",
+            "title": "X0"
+          },
+          "y0": {
+            "type": "number",
+            "title": "Y0"
+          },
+          "x1": {
+            "type": "number",
+            "title": "X1"
+          },
+          "y1": {
+            "type": "number",
+            "title": "Y1"
+          }
+        },
+        "type": "object",
+        "required": [
+          "page",
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "title": "Box"
+      },
+      "CaseDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "supplier_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supplier Name"
+          },
+          "supplier_ice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supplier Ice"
+          },
+          "invoice_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invoice Number"
+          },
+          "po_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Po Ref"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CaseStatus"
+          },
+          "reason_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reason Codes"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "decided_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided At"
+          },
+          "reasons": {
+            "items": {
+              "$ref": "#/components/schemas/FailedCheck"
+            },
+            "type": "array",
+            "title": "Reasons",
+            "description": "Failed checks when the case was created."
+          },
+          "invoice": {
+            "$ref": "#/components/schemas/Invoice",
+            "description": "As extracted (corrections are not applied here)."
+          },
+          "bl": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DeliveryNote"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "As extracted."
+          },
+          "odoo_po": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PoOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "documents": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DocumentInfo"
+            },
+            "type": "object",
+            "title": "Documents"
+          },
+          "corrections": {
+            "items": {
+              "$ref": "#/components/schemas/CorrectionOut"
+            },
+            "type": "array",
+            "title": "Corrections"
+          },
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/ActionOut"
+            },
+            "type": "array",
+            "title": "Actions"
+          },
+          "first_opened_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Opened At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "supplier_name",
+          "supplier_ice",
+          "invoice_number",
+          "po_ref",
+          "status",
+          "reason_codes",
+          "created_at",
+          "updated_at",
+          "decided_at",
+          "reasons",
+          "invoice",
+          "bl",
+          "odoo_po",
+          "documents",
+          "corrections",
+          "actions",
+          "first_opened_at"
+        ],
+        "title": "CaseDetail"
+      },
+      "CaseStatus": {
+        "type": "string",
+        "enum": [
+          "open",
+          "approved",
+          "rejected"
+        ],
+        "title": "CaseStatus"
+      },
+      "CaseSummary": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "supplier_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supplier Name"
+          },
+          "supplier_ice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Supplier Ice"
+          },
+          "invoice_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invoice Number"
+          },
+          "po_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Po Ref"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CaseStatus"
+          },
+          "reason_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reason Codes"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "decided_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "supplier_name",
+          "supplier_ice",
+          "invoice_number",
+          "po_ref",
+          "status",
+          "reason_codes",
+          "created_at",
+          "updated_at",
+          "decided_at"
+        ],
+        "title": "CaseSummary"
+      },
+      "CorrectionOut": {
+        "properties": {
+          "doc": {
+            "type": "string",
+            "title": "Doc"
+          },
+          "field_path": {
+            "type": "string",
+            "title": "Field Path"
+          },
+          "old_value": {
+            "title": "Old Value"
+          },
+          "new_value": {
+            "title": "New Value"
+          },
+          "old_confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Old Confidence"
+          },
+          "reviewer": {
+            "type": "string",
+            "title": "Reviewer"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "doc",
+          "field_path",
+          "old_value",
+          "new_value",
+          "old_confidence",
+          "reviewer",
+          "created_at"
+        ],
+        "title": "CorrectionOut"
+      },
+      "DeliveryNote": {
+        "properties": {
+          "doc_type": {
+            "type": "string",
+            "const": "delivery_note",
+            "title": "Doc Type",
+            "default": "delivery_note"
+          },
+          "supplier": {
+            "$ref": "#/components/schemas/Party"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/Party"
+          },
+          "number": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "date": {
+            "$ref": "#/components/schemas/Field_date_"
+          },
+          "po_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/Line"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "supplier",
+          "customer",
+          "number",
+          "date",
+          "lines"
+        ],
+        "title": "DeliveryNote"
+      },
+      "DocumentInfo": {
+        "properties": {
+          "file_name": {
+            "type": "string",
+            "title": "File Name"
+          },
+          "media_type": {
+            "type": "string",
+            "title": "Media Type"
+          },
+          "pages": {
+            "type": "integer",
+            "title": "Pages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file_name",
+          "media_type",
+          "pages"
+        ],
+        "title": "DocumentInfo"
+      },
+      "EditIn": {
+        "properties": {
+          "doc": {
+            "type": "string",
+            "enum": [
+              "invoice",
+              "bl"
+            ],
+            "title": "Doc"
+          },
+          "path": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Path",
+            "examples": [
+              "lines.2.unit_price_ht"
+            ]
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value",
+            "description": "New value as printed-normalised text: '2204.00', '2026-11-10', 'PO-004'."
+          }
+        },
+        "type": "object",
+        "required": [
+          "doc",
+          "path",
+          "value"
+        ],
+        "title": "EditIn"
+      },
+      "ErrorOut": {
+        "properties": {
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/FailedCheck"
+            },
+            "type": "array",
+            "title": "Checks",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "detail"
+        ],
+        "title": "ErrorOut"
+      },
+      "FailedCheck": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "doc": {
+            "type": "string",
+            "title": "Doc"
+          },
+          "line": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "hint": {
+            "type": "string",
+            "title": "Hint"
+          },
+          "overridable": {
+            "type": "boolean",
+            "title": "Overridable"
+          },
+          "fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fields"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "ok",
+          "detail",
+          "doc",
+          "line",
+          "title",
+          "hint",
+          "overridable",
+          "fields"
+        ],
+        "title": "FailedCheck"
+      },
+      "Field_Decimal_": {
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Box"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "confidence"
+        ],
+        "title": "Field[Decimal]"
+      },
+      "Field_date_": {
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Box"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "confidence"
+        ],
+        "title": "Field[date]"
+      },
+      "Field_str_": {
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Box"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "confidence"
+        ],
+        "title": "Field[str]"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Invoice": {
+        "properties": {
+          "doc_type": {
+            "type": "string",
+            "const": "invoice",
+            "title": "Doc Type",
+            "default": "invoice"
+          },
+          "supplier": {
+            "$ref": "#/components/schemas/Party"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/Party"
+          },
+          "number": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "date": {
+            "$ref": "#/components/schemas/Field_date_"
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_date_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "payment_terms": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "po_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bl_refs": {
+            "items": {
+              "$ref": "#/components/schemas/Field_str_"
+            },
+            "type": "array",
+            "title": "Bl Refs",
+            "default": []
+          },
+          "currency": {
+            "type": "string",
+            "const": "MAD",
+            "title": "Currency",
+            "default": "MAD"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/Line"
+            },
+            "type": "array",
+            "title": "Lines"
+          },
+          "total_ht": {
+            "$ref": "#/components/schemas/Field_Decimal_"
+          },
+          "vat": {
+            "items": {
+              "$ref": "#/components/schemas/VatBreakdown"
+            },
+            "type": "array",
+            "title": "Vat"
+          },
+          "total_ttc": {
+            "$ref": "#/components/schemas/Field_Decimal_"
+          }
+        },
+        "type": "object",
+        "required": [
+          "supplier",
+          "customer",
+          "number",
+          "date",
+          "lines",
+          "total_ht",
+          "vat",
+          "total_ttc"
+        ],
+        "title": "Invoice"
+      },
+      "Line": {
+        "properties": {
+          "description": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "supplier_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "quantity": {
+            "$ref": "#/components/schemas/Field_Decimal_"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unit_price_ht": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_Decimal_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "vat_rate": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_Decimal_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "exemption_ref": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "line_total_ht": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_Decimal_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "description",
+          "quantity"
+        ],
+        "title": "Line"
+      },
+      "Meta": {
+        "properties": {
+          "reviewer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewer"
+          },
+          "min_reason_chars": {
+            "type": "integer",
+            "title": "Min Reason Chars"
+          },
+          "reasons": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ReasonInfo"
+            },
+            "type": "object",
+            "title": "Reasons"
+          },
+          "odoo_url": {
+            "type": "string",
+            "title": "Odoo Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reviewer",
+          "min_reason_chars",
+          "reasons",
+          "odoo_url"
+        ],
+        "title": "Meta"
+      },
+      "Party": {
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "ice": {
+            "$ref": "#/components/schemas/Field_str_"
+          },
+          "if_number": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tp_number": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rc": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Field_str_"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "ice"
+        ],
+        "title": "Party"
+      },
+      "PoLineOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "default_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Code"
+          },
+          "product_name": {
+            "type": "string",
+            "title": "Product Name"
+          },
+          "uom": {
+            "type": "string",
+            "title": "Uom"
+          },
+          "qty_ordered": {
+            "type": "string",
+            "title": "Qty Ordered"
+          },
+          "qty_received": {
+            "type": "string",
+            "title": "Qty Received"
+          },
+          "qty_invoiced": {
+            "type": "string",
+            "title": "Qty Invoiced"
+          },
+          "price_unit": {
+            "type": "string",
+            "title": "Price Unit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "default_code",
+          "product_name",
+          "uom",
+          "qty_ordered",
+          "qty_received",
+          "qty_invoiced",
+          "price_unit"
+        ],
+        "title": "PoLineOut"
+      },
+      "PoOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "partner_id": {
+            "type": "integer",
+            "title": "Partner Id"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/PoLineOut"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "partner_id",
+          "state",
+          "lines"
+        ],
+        "title": "PoOut"
+      },
+      "ReasonInfo": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "hint": {
+            "type": "string",
+            "title": "Hint"
+          },
+          "overridable": {
+            "type": "boolean",
+            "title": "Overridable"
+          },
+          "fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fields"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "hint",
+          "overridable",
+          "fields"
+        ],
+        "title": "ReasonInfo"
+      },
+      "RecheckIn": {
+        "properties": {
+          "edits": {
+            "items": {
+              "$ref": "#/components/schemas/EditIn"
+            },
+            "type": "array",
+            "title": "Edits",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "RecheckIn"
+      },
+      "RecheckOut": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "review"
+            ],
+            "title": "Action"
+          },
+          "failed": {
+            "items": {
+              "$ref": "#/components/schemas/FailedCheck"
+            },
+            "type": "array",
+            "title": "Failed"
+          },
+          "blocking": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Blocking"
+          },
+          "overridable": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Overridable"
+          },
+          "can_approve": {
+            "type": "boolean",
+            "title": "Can Approve"
+          },
+          "needs_reason": {
+            "type": "boolean",
+            "title": "Needs Reason"
+          },
+          "already_drafted": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BillRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "po": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PoOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "failed",
+          "blocking",
+          "overridable",
+          "can_approve",
+          "needs_reason",
+          "already_drafted",
+          "po"
+        ],
+        "title": "RecheckOut"
+      },
+      "RejectIn": {
+        "properties": {
+          "edits": {
+            "items": {
+              "$ref": "#/components/schemas/EditIn"
+            },
+            "type": "array",
+            "title": "Edits",
+            "default": []
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "RejectIn"
+      },
+      "RejectOut": {
+        "properties": {
+          "case": {
+            "$ref": "#/components/schemas/CaseSummary"
+          },
+          "corrections": {
+            "type": "integer",
+            "title": "Corrections"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case",
+          "corrections"
+        ],
+        "title": "RejectOut"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VatBreakdown": {
+        "properties": {
+          "rate": {
+            "$ref": "#/components/schemas/Field_Decimal_"
+          },
+          "base_ht": {
+            "$ref": "#/components/schemas/Field_Decimal_"
+          },
+          "amount": {
+            "$ref": "#/components/schemas/Field_Decimal_"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rate",
+          "base_ht",
+          "amount"
+        ],
+        "title": "VatBreakdown"
+      }
+    }
+  }
+}

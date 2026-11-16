@@ -1,0 +1,156 @@
+{
+ "reviewer": "Test Reviewer",
+ "min_reason_chars": 10,
+ "reasons": {
+  "ICE_FORMAT": {
+   "title": "ICE is not valid",
+   "hint": "An ICE has 15 digits and passes the mod-97 check. Usually a misread digit.",
+   "overridable": false,
+   "fields": [
+    "supplier.ice",
+    "customer.ice"
+   ]
+  },
+  "SUPPLIER_KNOWN": {
+   "title": "Supplier not found in Odoo",
+   "hint": "No single Odoo supplier has this ICE. Check the ICE, or create the supplier in Odoo.",
+   "overridable": false,
+   "fields": [
+    "supplier.ice",
+    "supplier.name"
+   ]
+  },
+  "CUSTOMER_IS_US": {
+   "title": "Customer is not our company",
+   "hint": "The customer ICE on the document is not ours. Check the ICE or reject the document.",
+   "overridable": false,
+   "fields": [
+    "customer.ice",
+    "customer.name"
+   ]
+  },
+  "REQUIRED_PRESENT": {
+   "title": "Required value missing",
+   "hint": "A required value was not read. Type it from the document.",
+   "overridable": false,
+   "fields": []
+  },
+  "LINE_MATH": {
+   "title": "Line total does not add up",
+   "hint": "Quantity × unit price differs from the line total. Usually one misread number.",
+   "overridable": false,
+   "fields": [
+    "lines.{line}.quantity",
+    "lines.{line}.unit_price_ht",
+    "lines.{line}.line_total_ht"
+   ]
+  },
+  "SUM_HT": {
+   "title": "Lines do not add up to total HT",
+   "hint": "The sum of the line totals differs from the total excl. tax.",
+   "overridable": false,
+   "fields": [
+    "total_ht"
+   ]
+  },
+  "VAT_RATE_KNOWN": {
+   "title": "Unknown VAT rate",
+   "hint": "Only 0 (exempt), 10 and 20 % exist in 2026 (CGI art. 99, 91).",
+   "overridable": false,
+   "fields": [
+    "vat"
+   ]
+  },
+  "VAT_MATH": {
+   "title": "VAT breakdown does not add up",
+   "hint": "A VAT base × rate differs from the VAT amount, or the bases differ from the line totals.",
+   "overridable": false,
+   "fields": [
+    "vat",
+    "total_ht"
+   ]
+  },
+  "SUM_TTC": {
+   "title": "Total incl. tax does not add up",
+   "hint": "Total HT + VAT differs from the total TTC.",
+   "overridable": false,
+   "fields": [
+    "total_ht",
+    "total_ttc"
+   ]
+  },
+  "LOW_CONFIDENCE": {
+   "title": "Low extraction confidence",
+   "hint": "The extractor was unsure about a required value. Check it against the document.",
+   "overridable": true,
+   "fields": []
+  },
+  "PO_NOT_FOUND": {
+   "title": "Purchase order not found",
+   "hint": "No confirmed Odoo PO with this reference. Check the PO reference on the document.",
+   "overridable": false,
+   "fields": [
+    "po_ref"
+   ]
+  },
+  "PO_SUPPLIER_MISMATCH": {
+   "title": "PO belongs to another supplier",
+   "hint": "The PO found in Odoo is for a different supplier than the invoice.",
+   "overridable": false,
+   "fields": [
+    "po_ref",
+    "supplier.ice"
+   ]
+  },
+  "BL_MISSING": {
+   "title": "Delivery note missing",
+   "hint": "A three-way match needs the delivery note. Wait for it or reject.",
+   "overridable": false,
+   "fields": []
+  },
+  "LINE_UNMATCHED": {
+   "title": "Line not on the purchase order",
+   "hint": "This line could not be paired with a PO line by reference or description.",
+   "overridable": false,
+   "fields": [
+    "lines.{line}.supplier_ref",
+    "lines.{line}.description"
+   ]
+  },
+  "QTY_EXCEEDS_RECEIVED": {
+   "title": "Billed more than received",
+   "hint": "The supplier bills goods Odoo has not received. Reject and ask for a credit note, or validate a further receipt in Odoo first.",
+   "overridable": false,
+   "fields": [
+    "lines.{line}.quantity"
+   ]
+  },
+  "QTY_BL_MISMATCH": {
+   "title": "Delivery note disagrees with the receipt",
+   "hint": "The BL quantity differs from what Odoo received. Check the BL; approve with a reason if the receipt in Odoo is right.",
+   "overridable": true,
+   "fields": [
+    "lines.{line}.quantity"
+   ]
+  },
+  "PRICE_OVER_TOLERANCE": {
+   "title": "Price differs from the PO",
+   "hint": "The unit price is outside the tolerance. Approve with a reason if the new price was agreed, otherwise reject.",
+   "overridable": true,
+   "fields": [
+    "lines.{line}.unit_price_ht"
+   ]
+  },
+  "BILL_TOTAL_MISMATCH": {
+   "title": "Odoo totals differ from the invoice",
+   "hint": "The draft Odoo computed did not match the invoice totals, so it was not kept.",
+   "overridable": false,
+   "fields": [
+    "total_ht",
+    "total_ttc",
+    "vat"
+   ]
+  }
+ },
+ "odoo_url": "http://localhost:8069"
+}

@@ -60,3 +60,8 @@ Format: date · decision · why · alternatives rejected. Newest first.
 - **One process for the demo**: `trimatch serve` serves the built app and the API on 127.0.0.1:8000 (no CORS, no second server). Vite's dev server proxies /api for development.
 - **Invoice lines as cards**, not a wide table: the right-hand pane is ~600 px, and a 7-column table needed horizontal scrolling that hid the totals and the PO comparison.
 
+## 2026-11-16 (highlight boxes)
+- **Boxes come from the PDF text layer, not from Gemini**, whenever the copied text is found there. Gemini's own boxes centred on the right value for 33.0% of test fields. Rejected: a constant offset correction (the error varies per page and by row), and asking Gemini for better boxes (no control, costs calls).
+- **Ambiguity is resolved deterministically**: unique values anchor the page's shift and each table line's row; no thresholds were tuned on test.
+- **A box that isn't read from the file is marked `approximate`** and drawn dashed, so the screen never presents an estimate as exact. This covers misreads (exactly where a reviewer looks) and scans until OCR word boxes exist.
+

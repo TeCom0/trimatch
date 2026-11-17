@@ -63,7 +63,7 @@ export function DocumentViewer({ caseId, doc, pages, fields, selected, onSelect 
         </div>
         <span className="legend">
           <i className="sw failing" /> fails a check <i className="sw low" /> low confidence{' '}
-          <i className="sw edited" /> corrected
+          <i className="sw edited" /> corrected <i className="sw approx" /> approximate position
         </span>
       </div>
       <div className="viewer-scroll">
@@ -81,14 +81,14 @@ export function DocumentViewer({ caseId, doc, pages, fields, selected, onSelect 
               <button
                 key={f.path}
                 ref={isSel ? selectedRef : undefined}
-                className={`box ${f.state}${isSel ? ' selected' : ''}`}
+                className={`box ${f.state}${b.approximate ? ' approx' : ''}${isSel ? ' selected' : ''}`}
                 style={{
                   left: `${b.x0 * 100}%`,
                   top: `${b.y0 * 100}%`,
                   width: `${(b.x1 - b.x0) * 100}%`,
                   height: `${(b.y1 - b.y0) * 100}%`,
                 }}
-                title={`${f.label}: ${f.value ?? '—'}`}
+                title={`${f.label}: ${f.value ?? '—'}${b.approximate ? ' (approximate position: not found as printed in the file)' : ''}`}
                 aria-label={`${f.label} on the document`}
                 onClick={() => onSelect(f.path)}
               />

@@ -1,0 +1,26 @@
+{
+ "split": "test",
+ "seed": 2,
+ "docs": 40,
+ "skipped": 0,
+ "model": "gemini-3.5-flash-lite",
+ "prompt_hash": "cadd85983cea",
+ "methods": {
+  "gemini": {
+   "fields": 1504,
+   "hit": 496,
+   "iou_ge_0_5": 251,
+   "median_iou": 0.082,
+   "exact": 0,
+   "exact_wrong": 0
+  },
+  "snapped": {
+   "fields": 1504,
+   "hit": 1504,
+   "iou_ge_0_5": 1491,
+   "median_iou": 0.618,
+   "exact": 1503,
+   "exact_wrong": 0
+  }
+ }
+}

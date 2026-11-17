@@ -76,6 +76,7 @@ def test_unparseable_value_gets_zero_confidence():
 def test_box_is_converted_from_gemini_order():
     f = _f(RField(text="10", confidence=1, box=[100, 200, 150, 300]), parse_decimal)
     assert (f.source.x0, f.source.y0, f.source.x1, f.source.y1) == (0.2, 0.1, 0.3, 0.15)
+    assert f.source.approximate  # a model estimate until snapped (extract/snap.py)
 
 
 def test_recorded_invoice_parses_and_adds_up():

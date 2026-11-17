@@ -67,11 +67,9 @@ def run(page: Page, ids: dict[str, int]) -> None:
     base.press_sequentially("2204.00", delay=120)
     expect(page.get_by_text("All checks pass")).to_be_visible(timeout=10_000)
     pause(page, 1200)
-    shot(page, "fixed")
     page.get_by_role("button", name="Approve → draft bill in Odoo").click()
     expect(page.get_by_text("Draft bill created in Odoo")).to_be_visible(timeout=20_000)
     pause(page, 1500)
-    shot(page, "approved")
 
     # 2. PO-004: +8% on one price; approve only with a reason.
     page.goto(f"{BASE}/cases/{ids['PO-004']}")
@@ -111,14 +109,17 @@ def run(page: Page, ids: dict[str, int]) -> None:
     page.goto(f"{BASE}/?status=all")
     expect(page.get_by_text("rejected").first).to_be_visible()
     pause(page, 1500)
-    shot(page, "queue-done")
 
 
 def to_gif(video: Path, out: Path) -> None:
     if not shutil.which("ffmpeg"):
         print("ffmpeg not found: no GIF", file=sys.stderr)
         return
-    vf = "fps=8,scale=960:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128[p];[b][p]paletteuse=dither=bayer:bayer_scale=4"
+    vf = (
+        "fps=6,scale=800:-1:flags=lanczos,split[a][b];"
+        "[a]palettegen=max_colors=96:stats_mode=diff[p];"
+        "[b][p]paletteuse=dither=none:diff_mode=rectangle"
+    )
     subprocess.run(
         ["ffmpeg", "-y", "-loglevel", "error", "-i", str(video), "-vf", vf, str(out)], check=True
     )

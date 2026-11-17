@@ -17,6 +17,9 @@ class Box(BaseModel):
     y0: float
     x1: float
     y1: float
+    # True when the position is the model's estimate, not read from the file's text layer
+    # (or OCR): the review screen draws it dashed. Ground-truth boxes are exact.
+    approximate: bool = False
 
 
 class Field(BaseModel, Generic[T]):  # noqa: UP046 (explicit Generic is clearest with pydantic)

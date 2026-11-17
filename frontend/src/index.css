@@ -150,6 +150,8 @@ table.cases { width: 100%; border-collapse: collapse; background: var(--panel); 
 .box.failing { border: 2px solid var(--bad); background: color-mix(in srgb, var(--bad) 12%, transparent); }
 .box.low { border: 2px solid var(--warn); }
 .box.edited { border: 2px solid var(--edit); background: color-mix(in srgb, var(--edit) 12%, transparent); }
+.box.approx { border-style: dashed; }
+.sw.approx { border-color: var(--muted); border-style: dashed; }
 .box.selected { outline: 3px solid var(--sel); outline-offset: 2px; z-index: 2; }
 
 .checks ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }

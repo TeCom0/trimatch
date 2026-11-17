@@ -704,6 +704,11 @@
           "y1": {
             "type": "number",
             "title": "Y1"
+          },
+          "approximate": {
+            "type": "boolean",
+            "title": "Approximate",
+            "default": false
           }
         },
         "type": "object",

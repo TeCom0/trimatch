@@ -28,6 +28,8 @@ EXPECTED = {
     "clean": ("draft", []),
     "short_delivery": ("review", ["QTY_EXCEEDS_RECEIVED"]),
     "price_change": ("review", ["PRICE_OVER_TOLERANCE"]),
+    # dry run: the copy is caught within the run (nothing is billed, so no qty failure)
+    "duplicate_invoice": ("review", ["DUPLICATE_SUSPECTED"]),
 }
 
 
@@ -94,18 +96,19 @@ def e2e_decisions(manifest: dict, reset: bool) -> list[dict]:
             check=True,
             capture_output=True,
         )
-    scen = {d["po_ref"]: d["scenario"] for d in manifest["documents"]}
+    scen = {d["file"]: d["scenario"] for d in manifest["documents"]}
     rows = []
     e2e_dir = REPO_ROOT / "data" / "synthetic" / "e2e"
     for label, pick in (("clean", lambda v: v == "clean"), ("degraded", lambda v: v != "clean")):
         files = [e2e_dir / d["file"] for d in manifest["documents"] if pick(d["variant"])]
         results, _ = process(files, GeminiExtractor(), client, dry_run=True)
         for r in results:
-            want_action, want_codes = EXPECTED[scen[r.po_ref]]
+            want_action, want_codes = EXPECTED[scen[r.invoice_file]]
             rows.append(
                 {
                     "set": label,
-                    "po": r.po_ref,
+                    "po": r.po_ref
+                    + (" re-issued" if scen[r.invoice_file] == "duplicate_invoice" else ""),
                     "expected": want_action,
                     "expected_codes": want_codes,
                     "got": r.decision.action,

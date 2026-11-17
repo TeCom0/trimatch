@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Protocol
@@ -14,6 +14,7 @@ from typing import Protocol
 from trimatch.checks import Check
 from trimatch.config import REPO_ROOT, MatchConfig, load_config
 from trimatch.decide import Decision, confidence_check, decide
+from trimatch.duplicates import KnownInvoice, duplicate_check, known_from
 from trimatch.extract import Extractor
 from trimatch.match import LinePair, PoSnapshot, match_order
 from trimatch.odoo_adapter import OdooClient
@@ -130,11 +131,16 @@ def evaluate(
     po: PoSnapshot | None,
     refs: OdooRefs,
     cfg: MatchConfig,
+    known: list[KnownInvoice] | None = None,
 ) -> Evaluation:
-    """Validation + three-way match + decision. Pure: Odoo data comes in as arguments."""
+    """Validation + three-way match + decision. Pure: Odoo data comes in as arguments.
+
+    `known`: invoices already in Odoo, in the review store or earlier in this run, for the
+    duplicate check (duplicates.py)."""
     partner_id = supplier_partner_id(inv, refs)
     checks: list[Check] = validate_invoice(inv, refs, cfg)
     checks.append(confidence_check(inv, cfg, "invoice"))
+    checks.append(duplicate_check(inv, known or []))
     if bl:
         checks += validate_bl(bl, refs)
         checks.append(confidence_check(bl, cfg, "bl"))
@@ -225,6 +231,8 @@ def process_group(
     cfg: MatchConfig,
     dry_run: bool,
     review_sink: ReviewSink,
+    seen: list[KnownInvoice] | None = None,
+    prior: PriorCases | None = None,
 ) -> Result:
     inv: Invoice = inv_x.doc
     bl = bl_x.doc if bl_x else None
@@ -257,7 +265,11 @@ def process_group(
             return res
 
     po = client.po_snapshot(po_ref) if po_ref else None
-    ev = evaluate(inv, bl, po, refs, cfg)
+    known = list(seen or [])
+    known += odoo_known(client, partner_id, inv)
+    if prior is not None:
+        known += prior(inv)
+    ev = evaluate(inv, bl, po, refs, cfg, known)
     res.decision = ev.decision
 
     if res.decision.action == "draft" and not dry_run:
@@ -278,6 +290,7 @@ def process(
     client: OdooClient,
     dry_run: bool = False,
     review_sink: ReviewSink | None = None,
+    prior: PriorCases | None = None,
 ) -> tuple[list[Result], list[Extracted]]:
     """Run the whole flow. Review cases go to `review_sink` (default: JSON in data/review)."""
     sink = review_sink or JsonReviewSink()
@@ -287,11 +300,38 @@ def process(
         docs = list(pool.map(extractor.extract, paths))
     items = [Extracted(p, d) for p, d in zip(paths, docs, strict=True)]
     groups, lone_bls = group(items)
+    # Oldest invoice first, so that of two copies the later one is the suspected duplicate.
+    groups.sort(key=lambda g: (g[0].doc.date.value or date.max, g[0].path.name))
     company = client.buyer_company()
     refs = OdooRefs(company_ice=company["ice"], suppliers=client.suppliers())
     results = []
+    seen: list[KnownInvoice] = []
     for inv_x, bl_x, dups in groups:
-        r = process_group(inv_x, bl_x, client, refs, cfg, dry_run, sink)
+        r = process_group(inv_x, bl_x, client, refs, cfg, dry_run, sink, seen, prior)
         r.duplicates = [p.name for p in dups]
         results.append(r)
+        if r.decision.action != "skip":
+            seen.append(known_from(inv_x.doc, f"{inv_x.path.name} earlier in this run"))
     return results, lone_bls
+
+
+def odoo_known(client: OdooClient, partner_id: int | None, inv: Invoice) -> list[KnownInvoice]:
+    """Non-cancelled vendor bills of this supplier with the invoice's date and total."""
+    if not (partner_id and inv.date.value and inv.total_ttc.value is not None):
+        return []
+    return [
+        KnownInvoice(
+            where=f"Odoo bill {b['name'] or '#' + str(b['id'])}",
+            supplier_ice=inv.supplier.ice.value,
+            number=b["ref"] or None,
+            total_ttc=Decimal(str(b["amount_total"])).quantize(TOL),
+            invoice_date=inv.date.value,
+        )
+        for b in client.bills_like(partner_id, inv.date.value, inv.total_ttc.value)
+    ]
+
+
+class PriorCases(Protocol):
+    """Review cases already in the store that may be the same invoice (store.cases)."""
+
+    def __call__(self, inv: Invoice) -> list[KnownInvoice]: ...

@@ -209,6 +209,21 @@ class OdooClient:
             ["name", "state", "amount_total"],
         )
 
+    def bills_like(self, partner_id: int, invoice_date, total: Decimal) -> list[dict]:
+        """Non-cancelled vendor bills of this supplier on this date with this total (±0.01)."""
+        return self.search_read(
+            "account.move",
+            [
+                ("move_type", "=", "in_invoice"),
+                ("partner_id", "=", partner_id),
+                ("state", "!=", "cancel"),
+                ("invoice_date", "=", invoice_date.isoformat()),
+                ("amount_total", ">=", float(total) - 0.01),
+                ("amount_total", "<=", float(total) + 0.01),
+            ],
+            ["name", "ref", "state", "amount_total"],
+        )
+
     def create_draft_bill(self, po: PoSnapshot, inv: Invoice, pairs: list[LinePair]) -> dict:
         """Draft bill from the PO (Odoo's own action), aligned line by line with the invoice.
 

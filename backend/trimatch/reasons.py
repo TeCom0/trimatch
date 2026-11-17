@@ -113,6 +113,12 @@ REASONS: dict[str, Reason] = {
         overridable=True,
         fields=("lines.{line}.unit_price_ht",),
     ),
+    "DUPLICATE_SUSPECTED": Reason(
+        "Possible double billing",
+        "Same supplier, total and date as an invoice already known under another number. "
+        "Compare with the bill or case named in the detail, then reject the copy.",
+        fields=("number", "total_ttc", "date"),
+    ),
     "BILL_TOTAL_MISMATCH": Reason(
         "Odoo totals differ from the invoice",
         "The draft Odoo computed did not match the invoice totals, so it was not kept.",

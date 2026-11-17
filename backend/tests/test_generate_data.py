@@ -45,7 +45,11 @@ def test_vat_rates_are_2026_rates(data):
 
 
 def test_e2e_scenarios_match_spec(data):
-    docs = {(d.po_ref, d.kind): d.label for d in build_split("e2e", data) if d.variant == "clean"}
+    docs = {
+        (d.po_ref, d.kind): d.label
+        for d in build_split("e2e", data)
+        if d.variant == "clean" and d.scenario != "duplicate_invoice"
+    }
     assert len(docs) == 10
 
     # PO-002: BL shows 14 kg merlan (received), invoice bills the ordered 20 kg.
@@ -69,14 +73,25 @@ def test_e2e_scenarios_match_spec(data):
 
 def test_e2e_each_doc_has_clean_and_one_degraded(data):
     docs = build_split("e2e", data)
-    assert len(docs) == 20
-    assert sum(d.variant == "clean" for d in docs) == 10
+    assert len(docs) == 22  # 5 POs x (BL + invoice) x 2, plus PO-005's re-issued invoice x 2
+    assert sum(d.variant == "clean" for d in docs) == 11
     assert {d.variant for d in docs if d.variant != "clean"} == {
         "rot",
         "blur",
         "stamp",
         "handwriting",
     }
+
+
+def test_reissued_invoice_is_the_same_invoice_under_a_new_number(data):
+    docs = build_split("e2e", data)
+    [orig] = [d for d in docs if d.doc_id == "e2e_PO-005_invoice_clean"]
+    [copy] = [d for d in docs if d.doc_id == "e2e_PO-005r_invoice_clean"]
+    assert copy.scenario == "duplicate_invoice" and copy.ctx["duplicata"]
+    assert copy.label.number.value != orig.label.number.value
+    same = orig.label.model_copy(update={"number": copy.label.number})
+    assert copy.label == same  # lines, totals, date, BL ref, parties: identical
+    assert not any(d.doc_id.startswith("e2e_PO-005r_bl") for d in docs)
 
 
 @pytest.mark.parametrize("split", ["e2e", "dev"])

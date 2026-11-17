@@ -45,6 +45,7 @@ table.totals tr.ttc td { border-top: 2px solid {{ b.color }}; font-weight: 750; 
 .terms { margin-top: 3mm; font-size: 9pt; }
 .sign { display: flex; gap: 8mm; margin-top: 12mm; }
 .sign div { flex: 1; height: 30mm; border: 1px solid #b9b9be; padding: 2mm 3mm; font-size: 8pt; color: #5a5a60; }
+.duplicata { font-weight: 700; letter-spacing: 0.2em; color: #b00020; font-size: 11pt; }
 .note { position: absolute; left: 6mm; top: 2mm; transform: rotate(-5deg); font-family: "{{ hw_font }}", cursive;
         color: #1a3a8f; font-size: {{ hw_size }}; line-height: 1.5; }
 footer { position: absolute; left: 14mm; right: 14mm; bottom: 10mm; border-top: 1px solid #c9c9ce; padding-top: 2mm;
@@ -69,6 +70,7 @@ footer { position: absolute; left: 14mm; right: 14mm; bottom: 10mm; border-top: 
   </div>
   <div class="doc-title">
     <h1>{% if kind == "invoice" %}FACTURE{% else %}BON DE LIVRAISON{% endif %}</h1>
+    {% if duplicata %}<div class="duplicata">DUPLICATA</div>{% endif %}
     <table class="meta">
       <tr><td>N°</td><td><span data-field="number">{{ doc.number.value }}</span></td></tr>
       <tr><td>Date</td><td><span data-field="date">{{ doc.date.value | fr_date }}</span></td></tr>

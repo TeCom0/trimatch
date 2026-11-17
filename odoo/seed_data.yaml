@@ -126,6 +126,7 @@ purchase_orders:
   - name: PO-005
     supplier: hygipro
     scenario: clean
+    reissued_invoice: true   # generator adds a copy of the invoice under a new number (e2e)
     date_order: "2026-11-06"
     lines:
       - {product: HYG-SM24, qty: 5}

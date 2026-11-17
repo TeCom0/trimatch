@@ -10,6 +10,7 @@ from pathlib import Path
 from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
+from trimatch.duplicates import KnownInvoice, known_from
 from trimatch.match import PoLine, PoSnapshot
 from trimatch.schema import DeliveryNote, Invoice
 from trimatch.store.models import CaseStatus, ReviewCase
@@ -96,3 +97,34 @@ def po_from_json(data: dict | None) -> PoSnapshot | None:
         for ln in data["lines"]
     ]
     return PoSnapshot(**{**data, "lines": lines})
+
+
+def known_cases(
+    session: Session, inv: Invoice, exclude_case_id: int | None = None
+) -> list[KnownInvoice]:
+    """Open or approved review cases of the invoice's supplier, for the duplicate check
+    (duplicates.py). `exclude_case_id`: the case being re-checked in the review screen."""
+    ice = inv.supplier.ice.value
+    if not ice:
+        return []
+    q = select(ReviewCase).where(
+        ReviewCase.supplier_ice == ice,
+        ReviewCase.status.in_([CaseStatus.open, CaseStatus.approved]),
+    )
+    if exclude_case_id is not None:
+        q = q.where(ReviewCase.id != exclude_case_id)
+    return [
+        known_from(Invoice.model_validate(c.invoice), f"review case #{c.id} ({c.status.value})")
+        for c in session.scalars(q)
+    ]
+
+
+class StorePrior:
+    """pipeline.PriorCases backed by the store."""
+
+    def __init__(self, sessions: sessionmaker[Session]):
+        self.sessions = sessions
+
+    def __call__(self, inv: Invoice) -> list[KnownInvoice]:
+        with self.sessions() as s:
+            return known_cases(s, inv)

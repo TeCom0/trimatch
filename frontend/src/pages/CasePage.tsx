@@ -6,6 +6,7 @@ import { useApprove, useCase, useMeta, useRecheck, useReject } from '../api/hook
 import { ChecksPanel } from '../components/ChecksPanel'
 import { DecisionBar } from '../components/DecisionBar'
 import { DocumentViewer } from '../components/DocumentViewer'
+import { EInvoiceView } from '../components/EInvoiceView'
 import { FieldForm, type FormField } from '../components/FieldForm'
 import { checkCovers, fieldState, flattenDoc } from '../lib/fields'
 import { useEdits } from '../lib/useEdits'
@@ -99,7 +100,17 @@ function CaseView({ c }: { c: CaseDetail }) {
               </button>
             ))}
           </div>
-          {c.documents[doc] ? (
+          {c.documents[doc] && c.documents[doc].pages === 0 ? (
+            <EInvoiceView
+              fileName={c.documents[doc].file_name}
+              fields={fields}
+              selected={selected}
+              onSelect={(p) => {
+                setSelected(p)
+                document.getElementById(`f-${p}`)?.focus()
+              }}
+            />
+          ) : c.documents[doc] ? (
             <DocumentViewer
               key={doc}
               caseId={c.id}

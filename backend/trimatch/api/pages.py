@@ -22,9 +22,16 @@ def media_type(path: Path) -> str:
     return mimetypes.guess_type(path.name)[0] or "application/octet-stream"
 
 
+def is_image(path: Path) -> bool:
+    return media_type(path).startswith("image/")
+
+
 def page_count(path: Path) -> int:
-    if media_type(path) != "application/pdf":
+    """Pages to show as images: 0 for an XML e-invoice (shown as data, not as a page)."""
+    if is_image(path):
         return 1
+    if media_type(path) != "application/pdf":
+        return 0
     with PDFIUM_LOCK:
         pdf = pdfium.PdfDocument(path)
         try:
@@ -37,7 +44,7 @@ def page_image(path: Path, page: int, cache_dir: Path | None = None) -> tuple[by
     """-> (image bytes, media type) for a 1-based page. Raises IndexError on a bad page."""
     mt = media_type(path)
     if mt != "application/pdf":
-        if page != 1:
+        if page != 1 or not is_image(path):  # never serve XML or other files as a "page"
             raise IndexError(page)
         return path.read_bytes(), mt
     stat = path.stat()

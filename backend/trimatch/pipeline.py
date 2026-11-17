@@ -132,15 +132,18 @@ def evaluate(
     refs: OdooRefs,
     cfg: MatchConfig,
     known: list[KnownInvoice] | None = None,
+    file_checks: list[Check] | None = None,
 ) -> Evaluation:
     """Validation + three-way match + decision. Pure: Odoo data comes in as arguments.
 
     `known`: invoices already in Odoo, in the review store or earlier in this run, for the
-    duplicate check (duplicates.py)."""
+    duplicate check (duplicates.py). `file_checks`: checks on the file itself, e.g.
+    UBL_INVALID for an e-invoice (see file_checks())."""
     partner_id = supplier_partner_id(inv, refs)
     checks: list[Check] = validate_invoice(inv, refs, cfg)
     checks.append(confidence_check(inv, cfg, "invoice"))
     checks.append(duplicate_check(inv, known or []))
+    checks += file_checks or []
     if bl:
         checks += validate_bl(bl, refs)
         checks.append(confidence_check(bl, cfg, "bl"))
@@ -269,7 +272,7 @@ def process_group(
     known += odoo_known(client, partner_id, inv)
     if prior is not None:
         known += prior(inv)
-    ev = evaluate(inv, bl, po, refs, cfg, known)
+    ev = evaluate(inv, bl, po, refs, cfg, known, file_checks(inv_x.path))
     res.decision = ev.decision
 
     if res.decision.action == "draft" and not dry_run:
@@ -329,6 +332,15 @@ def odoo_known(client: OdooClient, partner_id: int | None, inv: Invoice) -> list
         )
         for b in client.bills_like(partner_id, inv.date.value, inv.total_ttc.value)
     ]
+
+
+def file_checks(invoice_file: Path) -> list[Check]:
+    """Checks on the invoice file itself: an XML e-invoice must be schema-valid UBL 2.1."""
+    if invoice_file.suffix.lower() == ".xml":
+        from trimatch.extract.ubl import ubl_check
+
+        return [ubl_check(invoice_file)]
+    return []
 
 
 class PriorCases(Protocol):

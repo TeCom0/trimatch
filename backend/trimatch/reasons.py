@@ -119,6 +119,11 @@ REASONS: dict[str, Reason] = {
         "Compare with the bill or case named in the detail, then reject the copy.",
         fields=("number", "total_ttc", "date"),
     ),
+    "UBL_INVALID": Reason(
+        "E-invoice is not valid UBL 2.1",
+        "The XML file fails the UBL 2.1 schema; values shown are what could be read. Ask "
+        "the supplier for a valid e-invoice, then reject this one.",
+    ),
     "BILL_TOTAL_MISMATCH": Reason(
         "Odoo totals differ from the invoice",
         "The draft Odoo computed did not match the invoice totals, so it was not kept.",

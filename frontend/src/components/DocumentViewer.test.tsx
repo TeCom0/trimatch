@@ -9,6 +9,7 @@ const field = (path: string, approximate: boolean, state: ViewerField['state'] =
   section: 'totals',
   value: '1.00',
   confidence: 1,
+  locator: null,
   kind: 'number',
   state,
   source: { page: 1, x0: 0.5, y0: 0.25, x1: 0.75, y1: 0.3, approximate },

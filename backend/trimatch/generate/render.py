@@ -59,6 +59,7 @@ def render_html(doc: GenDoc) -> str:
         sup=doc.ctx["supplier"],
         comp=doc.ctx["company"],
         amount_words=doc.ctx.get("amount_words", ""),
+        duplicata=doc.ctx.get("duplicata", False),
         fonts=FONTS.as_uri(),
         hw=hw,
         hw_font=hw_font,

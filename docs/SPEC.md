@@ -187,6 +187,7 @@ Additional codes (added 2026-11-14 with the step 3 plan):
 | `BL_MISSING` | an invoice arrived without its delivery note |
 | `BILL_TOTAL_MISMATCH` | after creating the draft, Odoo's untaxed/tax/total differ from the invoice by more than 0.01; the draft is deleted and the case goes to review |
 | `LOW_CONFIDENCE` | a required field is below `min_field_confidence` |
+| `DUPLICATE_SUSPECTED` | (Phase 1, 2026-11-17) same supplier, total TTC (±0.01) and invoice date as a non-cancelled Odoo bill, an invoice earlier in the run, or an open/approved review case, under another number; reject-only |
 | `ALREADY_DRAFTED` | skip, not review: a non-cancelled bill with the same supplier and ref exists (idempotency) |
 
 Tolerances live in `config/matching.yaml`.

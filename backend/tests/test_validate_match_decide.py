@@ -24,7 +24,11 @@ def seed():
 
 @pytest.fixture(scope="module")
 def e2e(seed):
-    return {(d.po_ref, d.kind): d.label for d in build_split("e2e", seed) if d.variant == "clean"}
+    return {
+        (d.po_ref, d.kind): d.label
+        for d in build_split("e2e", seed)
+        if d.variant == "clean" and d.scenario != "duplicate_invoice"
+    }
 
 
 @pytest.fixture(scope="module")

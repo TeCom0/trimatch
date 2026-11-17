@@ -16,14 +16,21 @@ from typing import Any, Literal
 
 from pydantic import ValidationError
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, object_session
 
 from trimatch.config import REPO_ROOT, MatchConfig
 from trimatch.match import PoSnapshot
 from trimatch.odoo_adapter import OdooClient
-from trimatch.pipeline import create_checked_draft, evaluate, po_ref_of, supplier_partner_id
+from trimatch.pipeline import (
+    create_checked_draft,
+    evaluate,
+    odoo_known,
+    po_ref_of,
+    supplier_partner_id,
+)
 from trimatch.reasons import OVERRIDABLE, describe
 from trimatch.schema import DeliveryNote, Invoice
+from trimatch.store.cases import known_cases
 from trimatch.store.models import (
     ActionKind,
     CaseStatus,
@@ -166,11 +173,15 @@ def recheck(
     refs = _refs(client)
     po_ref = po_ref_of(docs.invoice, docs.bl)
     po = client.po_snapshot(po_ref) if po_ref else None
-    ev = evaluate(docs.invoice, docs.bl, po, refs, cfg)
+    partner_id = supplier_partner_id(docs.invoice, refs)
+    known = odoo_known(client, partner_id, docs.invoice)
+    session = object_session(case)
+    if session is not None:
+        known += known_cases(session, docs.invoice, exclude_case_id=case.id)
+    ev = evaluate(docs.invoice, docs.bl, po, refs, cfg, known)
     failed = [c for c in ev.checks if not c.ok]
     codes = sorted({c.code for c in failed})
     existing = None
-    partner_id = supplier_partner_id(docs.invoice, refs)
     if partner_id and docs.invoice.number.value:
         bills = client.find_bill(partner_id, docs.invoice.number.value)
         existing = bills[0] if bills else None

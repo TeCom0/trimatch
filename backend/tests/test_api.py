@@ -59,6 +59,15 @@ class FakeOdoo:
             if b["partner_id"] == partner_id and b["ref"] == ref and b["id"] not in self.deleted
         ]
 
+    def bills_like(self, partner_id, invoice_date, total):
+        return [
+            b
+            for b in self.live_bills
+            if b["partner_id"] == partner_id
+            and b.get("invoice_date") == invoice_date
+            and abs(Decimal(str(b["amount_total"])) - total) <= Decimal("0.01")
+        ]
+
     def create_draft_bill(self, po, inv, pairs):
         vat = sum((v.amount.value for v in inv.vat), Decimal(0))
         bill = {
@@ -67,6 +76,7 @@ class FakeOdoo:
             "state": "draft",
             "partner_id": po.partner_id,
             "ref": inv.number.value,
+            "invoice_date": inv.date.value,
             "amount_untaxed": float(inv.total_ht.value + self.totals_off),
             "amount_tax": float(vat),
             "amount_total": float(inv.total_ttc.value + self.totals_off),

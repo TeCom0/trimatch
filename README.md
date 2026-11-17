@@ -92,6 +92,8 @@ First measured result, 2026-11-15: extraction with Gemini 3.5 Flash Lite (free t
 
 End to end against Odoo ([e2e report](eval/results/2026-11-15_7b4bdbc_e2e_gemini-3.5-flash-lite.md), the 5 seeded POs, clean and degraded sets, dry run): 8 of 10 decisions exactly as expected, **no wrong draft**. The 2 misses are clean cases sent to review because a misread number broke the VAT/total checks, which is the safe direction.
 
+Duplicate invoices (2026-11-17, [e2e report](eval/results/2026-11-17_0302ec5_e2e_gemini-3.5-flash-lite.md), code `0302ec5`): the e2e set now also has PO-005's invoice re-issued under a new number. Gemini extracted both copies (clean and stamped) with every field right, and the copy went to review as `DUPLICATE_SUSPECTED` in both sets; no planted error became a draft. Decisions exact: 10 of 12; the 2 misses are the same misread-number cases as before, sent to review.
+
 Caveats: synthetic documents from one layout, so these numbers say nothing yet about real supplier paperwork; that needs the Phase 1 real held-out set. LLM output varies between runs even at temperature 0.
 
 ## Data

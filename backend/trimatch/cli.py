@@ -58,6 +58,7 @@ def process(
     """Read BL + invoice documents, match them against Odoo, create draft bills or review cases."""
     paths = _expand(files)
     sink = None if dry_run else _review_sink(review_to)
+    prior = _store_prior() if review_to == "store" else None
     try:
         results, lone_bls = run_pipeline(
             paths,
@@ -65,6 +66,7 @@ def process(
             OdooClient.from_env(),
             dry_run=dry_run,
             review_sink=sink,
+            prior=prior,
         )
     except httpx.ConnectError as exc:
         typer.echo(
@@ -114,6 +116,17 @@ def _review_sink(target: str) -> ReviewSink:
     except StoreNotConfigured as exc:
         typer.echo(f"ERROR: {exc}", err=True)
         raise typer.Exit(1) from exc
+
+
+def _store_prior():
+    """Review cases for the duplicate check; None if the store isn't set up (dry runs)."""
+    from trimatch.store.cases import StorePrior
+    from trimatch.store.db import StoreNotConfigured, session_factory
+
+    try:
+        return StorePrior(session_factory())
+    except StoreNotConfigured:
+        return None
 
 
 @db_app.command("init")

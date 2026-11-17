@@ -2,6 +2,14 @@
 
 Newest first. One entry per work session: date, what was done, what's next.
 
+## 2026-11-17
+- Box fix merged (#8). Duplicate-invoice plan (docs/plan-phase1-duplicate-invoice.md) approved.
+- Built: `DUPLICATE_SUSPECTED` (duplicates.py): same supplier ICE, total TTC within 0.01 and invoice date as a known invoice under another number. Known = non-cancelled Odoo bills (`bills_like`, read only), invoices earlier in the same run (works in dry runs), open/approved review cases (store, excluding the case being re-checked). Reject-only. Groups are processed oldest invoice first, then by file name. Review screen re-check uses the same sources.
+- Generator: PO-005's invoice re-issued as DUPLICATA under a new number (FA-HP-2026-0257, e2e only, clean + stamp; `reissued_invoice` in seed_data.yaml, ignored by the Odoo seed). Existing e2e labels checked identical after regeneration (ignoring the new `approximate` box flag); only the 2 new files were copied in, so the Gemini cache of the old files still applies.
+- Tests: 12 new (rule, pipeline same-run and Odoo cases, store, review API); 128 unit + 2 live Odoo tests pass.
+- Reported e2e result (code 0302ec5, 22 docs, 2 new Gemini calls after two 503 "high demand" failures): field accuracy 99.7% (887/890); decisions exact 10/12; the re-issued copy flagged DUPLICATE_SUSPECTED in the clean and degraded sets; misses are PO-002 and PO-003 clean (same misreads as 2026-11-15, sent to review). Report: eval/results/2026-11-17_0302ec5_e2e_gemini-3.5-flash-lite.md.
+- Next: UBL e-invoice path, local OCR/extractor comparison, real held-out documents.
+
 ## 2026-11-16
 - Phase 1 review screen plan (docs/plan-phase1-review-screen.md) approved with D1-D3 as recommended.
 - PR 1 of 4 built: `pipeline.evaluate()` (pure validate + match + decide, shared by the CLI and the coming review API) and `create_checked_draft()` split out of `process_group`; review store in PostgreSQL (`trimatch_review` database and `trimatch` role in the Odoo Postgres container, SQLAlchemy 2 + psycopg 3, Alembic migration 0001); `trimatch db init|upgrade`, `trimatch review import`; `trimatch process` writes review cases to the store (`--review-to json` keeps the Phase 0 files). The two Phase 0 review files imported as cases #1 and #2. CI runs the store tests against a Postgres 16 service.

@@ -237,7 +237,29 @@ def build_e2e(data: dict, seed: int) -> list[GenDoc]:
             ["clean", v_bl],
             ["clean", v_inv],
         )
+        if po.get("reissued_invoice"):
+            # The same invoice re-issued under a new number, marked DUPLICATA: same lines,
+            # totals, date and BL. Key "<PO>r" sorts after the original's files.
+            copy = reissue(inv, rng)
+            docs += _docs_for_order(
+                "e2e",
+                f"{po['name']}r",
+                bl,
+                copy,
+                {**ctx, "duplicata": True},
+                po["name"],
+                "duplicate_invoice",
+                [],
+                ["clean", DEGRADED[(cycle + 2) % 4]],
+            )
     return docs
+
+
+def reissue(inv: Invoice, rng: random.Random) -> Invoice:
+    """A copy of the invoice under another number (same prefix and year)."""
+    prefix, seq = inv.number.value.rsplit("-", 1)
+    new = f"{prefix}-{(int(seq) + rng.randint(20, 60)) % 10000:04d}"
+    return inv.model_copy(update={"number": truth(new)})
 
 
 def _random_qty(rng: random.Random, unit: str) -> Decimal:

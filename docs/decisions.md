@@ -65,3 +65,8 @@ Format: date · decision · why · alternatives rejected. Newest first.
 - **Ambiguity is resolved deterministically**: unique values anchor the page's shift and each table line's row; no thresholds were tuned on test.
 - **A box that isn't read from the file is marked `approximate`** and drawn dashed, so the screen never presents an estimate as exact. This covers misreads (exactly where a reviewer looks) and scans until OCR word boxes exist.
 
+## 2026-11-17 (duplicate invoices)
+- **Duplicate = same supplier ICE + total TTC (±0.01) + invoice date, different number**, against Odoo bills, the current run and the review store. No PO condition: a copy re-issued against another PO must still be caught. Reject-only; a false flag costs one review and names the match.
+- **Oldest invoice first** within a run, so the later copy is the one flagged.
+- **e2e split extended, not regenerated**: the 2 new files were added; existing files kept byte-identical so their cached Gemini responses (and the 2026-11-15 numbers) stay valid.
+

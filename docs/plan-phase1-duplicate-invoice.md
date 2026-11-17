@@ -1,6 +1,6 @@
 # Phase 1, item 2: duplicate-invoice scenario (plan)
 
-Status: DRAFT 2026-11-17, for Youness's approval. Completes the planted errors of the brief (short delivery, price change, duplicate invoice).
+Status: APPROVED 2026-11-17 (D1 as recommended), built the same day. Completes the planted errors of the brief (short delivery, price change, duplicate invoice).
 
 ## The problem today
 

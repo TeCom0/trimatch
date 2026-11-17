@@ -1,6 +1,6 @@
 # Phase 1, item 3: UBL e-invoice input (plan)
 
-Status: DRAFT 2026-11-17, for Youness's approval.
+Status: APPROVED 2026-11-17 (D1, D2 as recommended), built the same day.
 
 ## What we know about the Moroccan format (checked 2026-11-17)
 

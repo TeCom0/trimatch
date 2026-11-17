@@ -70,3 +70,10 @@ Format: date · decision · why · alternatives rejected. Newest first.
 - **Oldest invoice first** within a run, so the later copy is the one flagged.
 - **e2e split extended, not regenerated**: the 2 new files were added; existing files kept byte-identical so their cached Gemini responses (and the 2026-11-15 numbers) stay valid.
 
+## 2026-11-17 (UBL e-invoices)
+- **Build against OASIS UBL 2.1, not a guessed Moroccan profile.** The DGI has published no specification; the Moroccan fields live in config/ubl_ma.yaml as a documented assumption. Never claim "DGI-compliant".
+- **OASIS UBL 2.1 Invoice XSDs vendored** in backend/trimatch/extract/ubl21 (source URL and zip SHA-256 in its README), so validation works offline and in CI.
+- **XML is parsed, never sent to a model**; schema failures don't stop the run: the values that can be read are shown and the case is reject-only (UBL_INVALID).
+- **Hardened XML parsing**: DOCTYPE refused, no entity resolution, no DTD, no network (XXE, billion laughs).
+- **Field.locator** records the XML element of each value; the review screen shows it on hover instead of a page box.
+

@@ -8,7 +8,13 @@ Newest first. One entry per work session: date, what was done, what's next.
 - Generator: PO-005's invoice re-issued as DUPLICATA under a new number (FA-HP-2026-0257, e2e only, clean + stamp; `reissued_invoice` in seed_data.yaml, ignored by the Odoo seed). Existing e2e labels checked identical after regeneration (ignoring the new `approximate` box flag); only the 2 new files were copied in, so the Gemini cache of the old files still applies.
 - Tests: 12 new (rule, pipeline same-run and Odoo cases, store, review API); 128 unit + 2 live Odoo tests pass.
 - Reported e2e result (code 0302ec5, 22 docs, 2 new Gemini calls after two 503 "high demand" failures): field accuracy 99.7% (887/890); decisions exact 10/12; the re-issued copy flagged DUPLICATE_SUSPECTED in the clean and degraded sets; misses are PO-002 and PO-003 clean (same misreads as 2026-11-15, sent to review). Report: eval/results/2026-11-17_0302ec5_e2e_gemini-3.5-flash-lite.md.
-- Next: UBL e-invoice path, local OCR/extractor comparison, real held-out documents.
+- Duplicate invoices merged (#9). UBL plan approved (D1 our own Morocco mapping, D2 vendor the OASIS UBL 2.1 XSDs).
+- Research 2026-11-17: no DGI e-invoice technical specification or implementing decree published; only vendor/consultancy sources describe UBL 2.1/CII and clearance, with conflicting dates (sources in docs/plan-phase1-ubl.md).
+- Built: `extract/ubl.py` (writer, XSD check against vendored OASIS UBL 2.1 Invoice schema, best-effort parser with `Field.locator`, hardened lxml parser: DOCTYPE refused, no entities/DTD/network); `config/ubl_ma.yaml` (ICE in PartyLegalEntity/CompanyID schemeID=ICE, IF/TP/RC as PartyIdentification schemeIDs, category E + TaxExemptionReason, Rec 20/21 unit codes); `.xml` routed to the parser by `get_extractor` (never to a model); `UBL_INVALID` file check (reject-only); `trimatch.generate.ubl_split` (e2e invoices as UBL, BLs copied byte for byte so the Gemini cache applies, 3 planted bad e-invoices); review screen shows an e-invoice as data with each value's XML element.
+- Found: Odoo quantities printed as `5E+1` in reason details (`Decimal.normalize`); fixed with a test.
+- Tests: 143 backend (14 new UBL), 12 frontend. Live run against Odoo on e2e_ubl: 3 drafts, 6 review cases (planted ones also get QTY_EXCEEDS_RECEIVED once PO-003 is billed, as expected live).
+- Reported (code 567dfe7, 0 API calls): e2e_ubl decisions 9/9 exact; field accuracy 613/613 (XML from our own writer + cached BLs, so a wiring check, not evidence about real e-invoices). Report: eval/results/2026-11-17_567dfe7_e2e_ubl_gemini-3.5-flash-lite.md.
+- Next: local OCR/extractor comparison (also gives word boxes for scans), real held-out documents.
 
 ## 2026-11-16
 - Phase 1 review screen plan (docs/plan-phase1-review-screen.md) approved with D1-D3 as recommended.

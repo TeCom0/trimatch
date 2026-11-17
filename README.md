@@ -94,6 +94,8 @@ End to end against Odoo ([e2e report](eval/results/2026-11-15_7b4bdbc_e2e_gemini
 
 Duplicate invoices (2026-11-17, [e2e report](eval/results/2026-11-17_0302ec5_e2e_gemini-3.5-flash-lite.md), code `0302ec5`): the e2e set now also has PO-005's invoice re-issued under a new number. Gemini extracted both copies (clean and stamped) with every field right, and the copy went to review as `DUPLICATE_SUSPECTED` in both sets; no planted error became a draft. Decisions exact: 10 of 12; the 2 misses are the same misread-number cases as before, sent to review.
 
+E-invoices (2026-11-17, [e2e_ubl report](eval/results/2026-11-17_567dfe7_e2e_ubl_gemini-3.5-flash-lite.md), code `567dfe7`): the same orders with the invoice as a UBL 2.1 XML file and the delivery note on paper, plus three planted bad e-invoices (schema-invalid, totals that don't add up, wrong buyer ICE). 9 of 9 decisions exact, no model call for the invoices. This shows the XML path is wired end to end; it says little about real e-invoices, because these files come from our own writer and Morocco has not published its format yet (the Moroccan fields follow our assumption in `config/ubl_ma.yaml`).
+
 Caveats: synthetic documents from one layout, so these numbers say nothing yet about real supplier paperwork; that needs the Phase 1 real held-out set. LLM output varies between runs even at temperature 0.
 
 ## Data

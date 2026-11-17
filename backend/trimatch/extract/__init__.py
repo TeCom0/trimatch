@@ -39,11 +39,28 @@ class LabelExtractor:
         return _doc_adapter.validate_json(label.read_text(encoding="utf-8"))
 
 
+class Routed:
+    """XML e-invoices are parsed (extract/ubl.py), never sent to a model; every other file
+    goes to `base` (Gemini, or the labels oracle)."""
+
+    def __init__(self, base: Extractor):
+        from trimatch.extract.ubl import UblExtractor
+
+        self.base, self.ubl = base, UblExtractor()
+        self.name = base.name
+        self.max_workers = getattr(base, "max_workers", 1)
+
+    def extract(self, path: Path) -> Document:
+        if path.suffix.lower() == ".xml":
+            return self.ubl.extract(path)
+        return self.base.extract(path)
+
+
 def get_extractor(name: str) -> Extractor:
     if name == "labels":
-        return LabelExtractor()
+        return Routed(LabelExtractor())
     if name == "gemini":
         from trimatch.extract.gemini import GeminiExtractor
 
-        return GeminiExtractor()
+        return Routed(GeminiExtractor())
     raise ValueError(f"unknown extractor {name!r} (available: labels, gemini)")

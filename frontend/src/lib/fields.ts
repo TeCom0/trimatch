@@ -7,7 +7,12 @@ export type Invoice = Schemas['Invoice']
 export type DeliveryNote = Schemas['DeliveryNote']
 export type Doc = Invoice | DeliveryNote
 
-type ExtractedField = { value: string | null; confidence: number; source?: Box | null }
+type ExtractedField = {
+  value: string | null
+  confidence: number
+  source?: Box | null
+  locator?: string | null
+}
 
 export type Section = 'header' | 'parties' | 'lines' | 'vat' | 'totals'
 
@@ -18,6 +23,7 @@ export type FieldEntry = {
   value: string | null
   confidence: number | null // null: the extractor returned nothing for this field
   source: Box | null
+  locator: string | null // element path in an XML e-invoice
   kind: 'text' | 'number' | 'date'
   line?: number
 }
@@ -39,6 +45,7 @@ function entry(
     value: f?.value ?? null,
     confidence: f ? f.confidence : null,
     source: f?.source ?? null,
+    locator: f?.locator ?? null,
     kind,
     line,
   }

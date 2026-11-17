@@ -329,7 +329,9 @@ class OdooClient:
 
 def _dec(x: float) -> Decimal:
     """Odoo floats -> Decimal at 4 dp (enough for qty and unit prices)."""
-    return Decimal(repr(x)).quantize(Decimal("0.0001")).normalize()
+    d = Decimal(repr(x)).quantize(Decimal("0.0001"))
+    # normalize() alone turns 50 into 5E+1, which then shows up in reason details.
+    return d.quantize(Decimal(1)) if d == d.to_integral_value() else d.normalize()
 
 
 # --- Step 1 check -------------------------------------------------------------------------

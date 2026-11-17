@@ -412,6 +412,8 @@ export interface components {
             /** Confidence */
             confidence: number;
             source?: components["schemas"]["Box"] | null;
+            /** Locator */
+            locator?: string | null;
         };
         /** Field[date] */
         Field_date_: {
@@ -420,6 +422,8 @@ export interface components {
             /** Confidence */
             confidence: number;
             source?: components["schemas"]["Box"] | null;
+            /** Locator */
+            locator?: string | null;
         };
         /** Field[str] */
         Field_str_: {
@@ -428,6 +432,8 @@ export interface components {
             /** Confidence */
             confidence: number;
             source?: components["schemas"]["Box"] | null;
+            /** Locator */
+            locator?: string | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {

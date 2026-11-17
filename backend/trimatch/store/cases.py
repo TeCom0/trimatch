@@ -24,8 +24,11 @@ def _value(doc: dict, *path: str) -> str | None:
 
 
 def case_key(entry: dict) -> str:
+    """<supplier ICE>_<invoice number>; the file name stands in for an unreadable number,
+    so two unreadable files don't collapse into one case."""
     inv = entry["invoice"]
-    return f"{_value(inv, 'supplier', 'ice') or '?'}_{_value(inv, 'number') or '?'}"
+    number = _value(inv, "number") or Path(entry["files"]["invoice"].replace("\\", "/")).name
+    return f"{_value(inv, 'supplier', 'ice') or '?'}_{number}"
 
 
 @dataclass

@@ -1,0 +1,242 @@
+{
+ "split": "e2e_ubl",
+ "sha": "567dfe7",
+ "dirty": false,
+ "model": "gemini-3.5-flash-lite",
+ "prompt_hash": "cadd85983cea",
+ "documents": [
+  {
+   "doc_id": "e2e_ubl_e2e_PO-001_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "e2e_ubl_e2e_PO-001_invoice_ubl",
+   "variant": "ubl",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "e2e_ubl_e2e_PO-002_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "e2e_ubl_e2e_PO-002_invoice_ubl",
+   "variant": "ubl",
+   "doc_type": "invoice",
+   "fields_right": 42,
+   "fields_total": 42,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "e2e_ubl_e2e_PO-003_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "e2e_ubl_e2e_PO-003_invoice_ubl",
+   "variant": "ubl",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "e2e_ubl_e2e_PO-004_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "e2e_ubl_e2e_PO-004_invoice_ubl",
+   "variant": "ubl",
+   "doc_type": "invoice",
+   "fields_right": 49,
+   "fields_total": 49,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "e2e_ubl_e2e_PO-005_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "e2e_ubl_e2e_PO-005_invoice_ubl",
+   "variant": "ubl",
+   "doc_type": "invoice",
+   "fields_right": 57,
+   "fields_total": 57,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "e2e_ubl_e2e_PO-005r_invoice_ubl",
+   "variant": "ubl",
+   "doc_type": "invoice",
+   "fields_right": 57,
+   "fields_total": 57,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "e2e_ubl_PO-003-bad-schema_invoice_ubl",
+   "variant": "ubl",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "e2e_ubl_PO-003-bad-total_invoice_ubl",
+   "variant": "ubl",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "e2e_ubl_PO-003-bad-buyer_invoice_ubl",
+   "variant": "ubl",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  }
+ ],
+ "decisions": [
+  {
+   "set": "ubl",
+   "po": "PO-002",
+   "expected": "review",
+   "expected_codes": [
+    "QTY_EXCEEDS_RECEIVED"
+   ],
+   "got": "review",
+   "got_codes": [
+    "QTY_EXCEEDS_RECEIVED"
+   ],
+   "ok": true
+  },
+  {
+   "set": "ubl",
+   "po": "PO-001",
+   "expected": "draft",
+   "expected_codes": [],
+   "got": "draft",
+   "got_codes": [],
+   "ok": true
+  },
+  {
+   "set": "ubl",
+   "po": "PO-003",
+   "expected": "draft",
+   "expected_codes": [],
+   "got": "draft",
+   "got_codes": [],
+   "ok": true
+  },
+  {
+   "set": "ubl",
+   "po": "PO-003 bad total",
+   "expected": "review",
+   "expected_codes": [
+    "SUM_TTC"
+   ],
+   "got": "review",
+   "got_codes": [
+    "SUM_TTC"
+   ],
+   "ok": true
+  },
+  {
+   "set": "ubl",
+   "po": "PO-005",
+   "expected": "draft",
+   "expected_codes": [],
+   "got": "draft",
+   "got_codes": [],
+   "ok": true
+  },
+  {
+   "set": "ubl",
+   "po": "PO-005 re-issued",
+   "expected": "review",
+   "expected_codes": [
+    "DUPLICATE_SUSPECTED"
+   ],
+   "got": "review",
+   "got_codes": [
+    "DUPLICATE_SUSPECTED"
+   ],
+   "ok": true
+  },
+  {
+   "set": "ubl",
+   "po": "PO-003 wrong buyer",
+   "expected": "review",
+   "expected_codes": [
+    "CUSTOMER_IS_US"
+   ],
+   "got": "review",
+   "got_codes": [
+    "CUSTOMER_IS_US"
+   ],
+   "ok": true
+  },
+  {
+   "set": "ubl",
+   "po": "PO-003 schema-invalid",
+   "expected": "review",
+   "expected_codes": [
+    "UBL_INVALID"
+   ],
+   "got": "review",
+   "got_codes": [
+    "UBL_INVALID"
+   ],
+   "ok": true
+  },
+  {
+   "set": "ubl",
+   "po": "PO-004",
+   "expected": "review",
+   "expected_codes": [
+    "PRICE_OVER_TOLERANCE"
+   ],
+   "got": "review",
+   "got_codes": [
+    "PRICE_OVER_TOLERANCE"
+   ],
+   "ok": true
+  }
+ ]
+}

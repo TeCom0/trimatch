@@ -36,3 +36,17 @@ def test_french_formats():
     assert fr_amount(D("2484.6")) == "2 484,60"
     assert fr_qty(D(10)) == "10"
     assert fr_qty(D("12.50")) == "12,5"
+
+
+def test_odoo_floats_never_print_in_exponent_form():
+    from trimatch.odoo_adapter import _dec
+
+    assert [str(_dec(x)) for x in (50.0, 10.0, 14.0, 92.0, 99.36, 0.5, 1e-05)] == [
+        "50",
+        "10",
+        "14",
+        "92",
+        "99.36",
+        "0.5",
+        "0",
+    ]

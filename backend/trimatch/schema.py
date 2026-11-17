@@ -26,6 +26,9 @@ class Field(BaseModel, Generic[T]):  # noqa: UP046 (explicit Generic is clearest
     value: T | None
     confidence: float  # 0..1, from the extractor (1.0 in ground truth)
     source: Box | None = None  # where the value was read
+    # For structured inputs (UBL XML): the element the value came from, e.g.
+    # "cac:LegalMonetaryTotal/cbc:PayableAmount". None for images and PDFs.
+    locator: str | None = None
 
 
 class Party(BaseModel):

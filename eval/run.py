@@ -18,18 +18,23 @@ from importlib.metadata import version
 
 from trimatch.config import REPO_ROOT
 from trimatch.evaluation import aggregate, calibration, pct, percentile, score_document
-from trimatch.extract import LabelExtractor
+from trimatch.extract import LabelExtractor, Routed
 from trimatch.extract.gemini import GeminiExtractor, NotADocument, QuotaExhausted
+from trimatch.extract.ubl import UblExtractor
 
-SPLITS = {"dev": 1, "test": 2, "e2e": 3}
+SPLITS = {"dev": 1, "test": 2, "e2e": 3, "e2e_ubl": 3}
 RESULTS = REPO_ROOT / "eval" / "results"
-VARIANTS = ["clean", "rot", "blur", "stamp", "handwriting"]
+VARIANTS = ["clean", "rot", "blur", "stamp", "handwriting", "ubl"]
 EXPECTED = {
     "clean": ("draft", []),
     "short_delivery": ("review", ["QTY_EXCEEDS_RECEIVED"]),
     "price_change": ("review", ["PRICE_OVER_TOLERANCE"]),
     # dry run: the copy is caught within the run (nothing is billed, so no qty failure)
     "duplicate_invoice": ("review", ["DUPLICATE_SUSPECTED"]),
+    # e2e_ubl planted e-invoices (trimatch.generate.ubl_split)
+    "ubl_invalid": ("review", ["UBL_INVALID"]),
+    "ubl_bad_total": ("review", ["SUM_TTC"]),
+    "ubl_wrong_buyer": ("review", ["CUSTOMER_IS_US"]),
 }
 
 
@@ -52,19 +57,22 @@ def extract_all(split: str, manifest: dict, ex: GeminiExtractor):
     for d in manifest["documents"]:
         path = REPO_ROOT / "data" / "synthetic" / split / d["file"]
         truth = labels.extract(path)
-        try:
-            pred = ex.extract(path)
-        except NotADocument:
-            pred = None
-        rec = ex.raw(path)
-        latencies.append(rec["latency_s"])
-        tokens.append(rec["usage"])
+        if path.suffix.lower() == ".xml":  # e-invoice: parsed, no model call
+            pred = UblExtractor().extract(path)
+        else:
+            try:
+                pred = ex.extract(path)
+            except NotADocument:
+                pred = None
+            rec = ex.raw(path)
+            latencies.append(rec["latency_s"])
+            tokens.append(rec["usage"])
         scores.append(score_document(d["doc_id"], d["variant"], pred, truth))
         print(f"  {d['file']}: {scores[-1].fields_right}/{scores[-1].fields_total}", flush=True)
     return scores, latencies, tokens
 
 
-def e2e_decisions(manifest: dict, reset: bool) -> list[dict]:
+def e2e_decisions(manifest: dict, reset: bool, split: str = "e2e") -> list[dict]:
     """Dry-run the pipeline on the clean set and on the degraded set, vs SPEC section 4."""
     from trimatch.odoo_adapter import OdooClient
     from trimatch.pipeline import process
@@ -98,17 +106,27 @@ def e2e_decisions(manifest: dict, reset: bool) -> list[dict]:
         )
     scen = {d["file"]: d["scenario"] for d in manifest["documents"]}
     rows = []
-    e2e_dir = REPO_ROOT / "data" / "synthetic" / "e2e"
-    for label, pick in (("clean", lambda v: v == "clean"), ("degraded", lambda v: v != "clean")):
+    e2e_dir = REPO_ROOT / "data" / "synthetic" / split
+    sets = (
+        [("ubl", lambda v: True)]
+        if split == "e2e_ubl"
+        else [("clean", lambda v: v == "clean"), ("degraded", lambda v: v != "clean")]
+    )
+    for label, pick in sets:
         files = [e2e_dir / d["file"] for d in manifest["documents"] if pick(d["variant"])]
-        results, _ = process(files, GeminiExtractor(), client, dry_run=True)
+        results, _ = process(files, Routed(GeminiExtractor()), client, dry_run=True)
         for r in results:
             want_action, want_codes = EXPECTED[scen[r.invoice_file]]
             rows.append(
                 {
                     "set": label,
                     "po": r.po_ref
-                    + (" re-issued" if scen[r.invoice_file] == "duplicate_invoice" else ""),
+                    + {
+                        "duplicate_invoice": " re-issued",
+                        "ubl_invalid": " schema-invalid",
+                        "ubl_bad_total": " bad total",
+                        "ubl_wrong_buyer": " wrong buyer",
+                    }.get(scen[r.invoice_file], ""),
                     "expected": want_action,
                     "expected_codes": want_codes,
                     "got": r.decision.action,
@@ -211,6 +229,8 @@ def report(
         "",
         "## Latency and tokens per document",
         "",
+        "(Model calls only: XML e-invoices are parsed without a model.)",
+        "",
         (
             f"- Latency (recorded at call time): median {percentile(latencies, 50):.1f} s, "
             f"p95 {percentile(latencies, 95):.1f} s"
@@ -263,7 +283,11 @@ def main(argv: list[str] | None = None) -> int:
     except QuotaExhausted as e:
         print(f"STOPPED: {e}\nNo report written; re-run later, cached documents cost nothing.")
         return 2
-    decisions = e2e_decisions(manifest, args.reset_bills) if args.split == "e2e" else []
+    decisions = (
+        e2e_decisions(manifest, args.reset_bills, args.split)
+        if args.split in ("e2e", "e2e_ubl")
+        else []
+    )
 
     RESULTS.mkdir(parents=True, exist_ok=True)
     stem = f"{date.today().isoformat()}_{sha}{'-dirty' if dirty else ''}_{args.split}_{ex.model}"

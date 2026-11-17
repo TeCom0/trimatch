@@ -24,6 +24,7 @@ from trimatch.odoo_adapter import OdooClient
 from trimatch.pipeline import (
     create_checked_draft,
     evaluate,
+    file_checks,
     odoo_known,
     po_ref_of,
     supplier_partner_id,
@@ -178,7 +179,9 @@ def recheck(
     session = object_session(case)
     if session is not None:
         known += known_cases(session, docs.invoice, exclude_case_id=case.id)
-    ev = evaluate(docs.invoice, docs.bl, po, refs, cfg, known)
+    inv_file = source_file(case.invoice_file)
+    extra = file_checks(inv_file) if inv_file and inv_file.is_file() else []
+    ev = evaluate(docs.invoice, docs.bl, po, refs, cfg, known, extra)
     failed = [c for c in ev.checks if not c.ok]
     codes = sorted({c.code for c in failed})
     existing = None

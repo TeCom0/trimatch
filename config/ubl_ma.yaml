@@ -1,0 +1,25 @@
+# Where Moroccan values sit in a UBL 2.1 Invoice (docs/plan-phase1-ubl.md).
+# OUR ASSUMPTION: the DGI has not published its e-invoice specification (checked 2026-11-17).
+# When it does, change this file, not the code.
+customization_id: "urn:trimatch:ma:assumed:2026-11"
+currency: MAD
+
+# Party identifiers. ICE is the legal registration number; IF, TP and RC are other IDs.
+party:
+  ice: {element: "cac:PartyLegalEntity/cbc:CompanyID", scheme: ICE}
+  if_number: {element: "cac:PartyIdentification/cbc:ID", scheme: IF}
+  tp_number: {element: "cac:PartyIdentification/cbc:ID", scheme: TP}
+  rc: {element: "cac:PartyIdentification/cbc:ID", scheme: RC}
+
+# VAT categories (UNCL5305): S = standard rate (10 or 20), E = exempt (CGI art. 91/92,
+# article in TaxExemptionReason).
+vat_category: {standard: S, exempt: E}
+
+# Units: UN/ECE Rec 20 / Rec 21 codes <-> the units printed on the documents.
+units:
+  KGM: kg
+  CT: carton
+  PK: pack
+  CA: bidon
+  BG: sac
+  RO: rouleau

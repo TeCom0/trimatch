@@ -46,7 +46,7 @@ def _expand(patterns: list[str]) -> list[Path]:
 def process(
     files: Annotated[list[str], typer.Argument(help="Documents (PDF/JPG); globs allowed.")],
     extractor: Annotated[
-        str, typer.Option(help="labels (ground truth) | gemini (step 4)")
+        str, typer.Option(help="labels (ground truth) | gemini | local-vlm | local-ocr-llm")
     ] = "labels",
     dry_run: Annotated[
         bool, typer.Option(help="Decide only: no Odoo writes, no review cases.")

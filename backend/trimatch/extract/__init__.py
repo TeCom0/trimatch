@@ -63,4 +63,10 @@ def get_extractor(name: str) -> Extractor:
         from trimatch.extract.gemini import GeminiExtractor
 
         return Routed(GeminiExtractor())
-    raise ValueError(f"unknown extractor {name!r} (available: labels, gemini)")
+    if name in ("local-vlm", "local-ocr-llm"):
+        from trimatch.extract.local import LocalVlmExtractor, OcrLlmExtractor
+
+        return Routed(LocalVlmExtractor() if name == "local-vlm" else OcrLlmExtractor())
+    raise ValueError(
+        f"unknown extractor {name!r} (available: labels, gemini, local-vlm, local-ocr-llm)"
+    )

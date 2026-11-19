@@ -1,0 +1,11 @@
+# OCR for scans and photos (backend/trimatch/extract/ocr.py). Everything lives on D:
+# (Youness's rule: nothing installed on C:). Engine chosen by measurement, see docs/progress.md.
+engine: rapidocr
+
+rapidocr:
+  model_root_dir: "D:/Apps/trimatch/rapidocr-models"
+
+tesseract:
+  exe: "D:/Apps/Tesseract-OCR/tesseract.exe"
+  tessdata: "D:/Apps/trimatch/tessdata"
+  lang: fra

@@ -1,6 +1,6 @@
 # Phase 1, item 4: local extractors compared (plan)
 
-Status: DRAFT 2026-11-19, for Youness's approval.
+Status: APPROVED 2026-11-19 (D1-D3), built and measured 2026-11-19/20.
 
 ## Why
 

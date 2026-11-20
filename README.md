@@ -96,6 +96,16 @@ Duplicate invoices (2026-11-17, [e2e report](eval/results/2026-11-17_0302ec5_e2e
 
 E-invoices (2026-11-17, [e2e_ubl report](eval/results/2026-11-17_567dfe7_e2e_ubl_gemini-3.5-flash-lite.md), code `567dfe7`): the same orders with the invoice as a UBL 2.1 XML file and the delivery note on paper, plus three planted bad e-invoices (schema-invalid, totals that don't add up, wrong buyer ICE). 9 of 9 decisions exact, no model call for the invoices. This shows the XML path is wired end to end; it says little about real e-invoices, because these files come from our own writer and Morocco has not published its format yet (the Moroccan fields follow our assumption in `config/ubl_ma.yaml`).
 
+Local extractors (2026-11-20, no data leaves the laptop; the only ones allowed for real documents). Held-out test split, same 200 documents as Gemini above, run on a Windows laptop with an AMD RX 7600S (8 GB) through Ollama:
+
+| | Field accuracy | Document accuracy | Stamped scans (field acc.) | Time per page | Report |
+|---|---|---|---|---|---|
+| Gemini 3.5 Flash Lite (cloud, 2026-11-15) | 99.2% | 86.5% | 98.8% | seconds | [test](eval/results/2026-11-15_7b4bdbc_test_gemini-3.5-flash-lite.md) |
+| Qwen2.5-VL 7B reading the page | 97.0% | 75.5% | 96.5% | median 118 s | [test](eval/results/2026-11-20_3b632f9_test_qwen2.5vl-7b.md) |
+| RapidOCR + Qwen3 8B | 96.5% | 50.5% | 90.8% | median 88 s | [test](eval/results/2026-11-20_3b632f9_test_qwen3-8b.md) |
+
+End to end against Odoo (e2e set, 12 decisions each, code `007cc99`): **no wrong draft for either**; misreads went to review ([vision](eval/results/2026-11-20_007cc99_e2e_qwen2.5vl-7b.md): 8/12 exact, [OCR + LLM](eval/results/2026-11-20_007cc99_e2e_qwen3-8b.md): 8/12 exact). The vision model is the default local extractor: it is close to the OCR route on fields but far ahead on whole documents and on stamped scans. Scanned pages also get exact highlight boxes now, from OCR word positions.
+
 Caveats: synthetic documents from one layout, so these numbers say nothing yet about real supplier paperwork; that needs the Phase 1 real held-out set. LLM output varies between runs even at temperature 0.
 
 ## Data

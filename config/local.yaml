@@ -1,0 +1,13 @@
+# Local extractors through Ollama (backend/trimatch/extract/local.py). Free, offline.
+# Ollama and its models live on D: (D:\Apps\Ollama, OLLAMA_MODELS=D:\Apps\ollama-models).
+ollama_url: "http://127.0.0.1:11434"
+
+vlm:
+  model: "qwen2.5vl:7b"     # Apache-2.0
+  max_side: 1400            # page image, longest side in px
+  box_order: xyxy           # Qwen-VL boxes are [x1, y1, x2, y2] on 0..1000
+  options: {num_ctx: 8192, num_predict: 4096}
+
+ocr_llm:
+  model: "qwen3:8b"         # Apache-2.0
+  options: {num_ctx: 8192, num_predict: 4096}

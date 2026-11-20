@@ -14,7 +14,19 @@ Newest first. One entry per work session: date, what was done, what's next.
 - Found: Odoo quantities printed as `5E+1` in reason details (`Decimal.normalize`); fixed with a test.
 - Tests: 143 backend (14 new UBL), 12 frontend. Live run against Odoo on e2e_ubl: 3 drafts, 6 review cases (planted ones also get QTY_EXCEEDS_RECEIVED once PO-003 is billed, as expected live).
 - Reported (code 567dfe7, 0 API calls): e2e_ubl decisions 9/9 exact; field accuracy 613/613 (XML from our own writer + cached BLs, so a wiring check, not evidence about real e-invoices). Report: eval/results/2026-11-17_567dfe7_e2e_ubl_gemini-3.5-flash-lite.md.
-- Next: local OCR/extractor comparison (also gives word boxes for scans), real held-out documents.
+- UBL merged (#10).
+
+## 2026-11-19 / 2026-11-20
+- Local extractor plan approved (D1-D3). Youness: everything installed goes on D: (Ollama D:\Apps\Ollama, models D:\Apps\ollama-models, Tesseract D:\Apps\Tesseract-OCR, OCR data/models D:\Apps	rimatch).
+- Step 0: Ollama 0.40.16 sees the RX 7600S through ROCm (gfx1102); qwen2.5vl:7b and qwen3:8b run 100% on GPU (probe: ~46 and ~34 output tok/s).
+- OCR engine (dev, box placement on 5239 scan fields with Gemini's cached text; debug, not reported): RapidOCR PP-OCRv5 Latin 98.3% box centres on the value, Tesseract 5 fra 97.2%; RapidOCR kept. Scan snapping made stricter (exact only when clearly nearest to the model's box): wrong "exact" boxes 70 -> 14 of ~4900.
+- Built: extract/ocr.py (words + boxes, deskew for row grouping), extract/local.py (local-vlm, local-ocr-llm via Ollama, slim schema for the text model, Qwen-VL box order, retry once on cut-off JSON then EXTRACTION_FAILED), pipeline sends unreadable files to review (EXTRACTION_FAILED) instead of stopping, eval.run --extractor/--subset, eval.boxes --engines.
+- Tuning (dev, 10 then 12 documents, prompts only): VLM 97.4% -> 99.3%, OCR+LLM 78.9% -> 98.0%.
+- Found on the held-out runs: Qwen2.5-VL looped to the 4096-token limit on one test document (fixed: retry + EXTRACTION_FAILED); an unread quantity crashed match_order (fixed: comparisons skipped for unread values, REQUIRED_PRESENT already reviews them); Docker didn't restart after a laptop reboot, so the first e2e attempts failed (rerun).
+- Reported, test split (seed 2, 200 docs, code 3b632f9): Qwen2.5-VL 7B field 97.0%, document 75.5%, median 118 s/page; RapidOCR + Qwen3 8B field 96.5%, document 50.5%, stamped scans 90.8%, median 88 s/page. Gemini baseline (2026-11-15): 99.2% / 86.5%.
+- Reported, e2e (code 007cc99): both 8/12 decisions exact, 0 wrong drafts.
+- Decision: local-vlm is the default local extractor (for real documents).
+- Next: Phase 1 real held-out set (needs Youness: source + permission), then the remaining brief items.
 
 ## 2026-11-16
 - Phase 1 review screen plan (docs/plan-phase1-review-screen.md) approved with D1-D3 as recommended.

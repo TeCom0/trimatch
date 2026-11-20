@@ -21,7 +21,8 @@ import yaml
 
 from trimatch.config import CONFIG_DIR, REPO_ROOT
 from trimatch.extract.gemini_schema import RDoc, model_box, rfields, to_document
-from trimatch.extract.snap import Item, Rect, page_text, snap
+from trimatch.extract.ocr import page_words
+from trimatch.extract.snap import Item, Rect, snap
 from trimatch.odoo_adapter import load_dotenv
 from trimatch.schema import DeliveryNote, Invoice
 
@@ -225,14 +226,15 @@ if __name__ == "__main__":
     sys.exit(main())
 
 
-def snapped_boxes(rdoc: RDoc, path: Path):
-    """Box lookup for to_document: Gemini's boxes moved onto the PDF text layer where the
-    copied text is found (extract/snap.py); scans keep Gemini's estimate, marked approximate."""
-    pt = page_text(path) if path.suffix.lower() == ".pdf" else None
+def snapped_boxes(rdoc: RDoc, path: Path, ocr_engine: str | None = None):
+    """Box lookup for to_document: Gemini's boxes moved onto the words of the page (PDF text
+    layer, or OCR for scans: extract/ocr.py) where the copied text is found (extract/snap.py).
+    A value not found keeps Gemini's estimate, marked approximate."""
+    pt = page_words(path, ocr_engine)
     items = [
         Item(key=id(f), text=f.text, model_box=_rect(f), line=line) for f, line in rfields(rdoc)
     ]
-    boxes = snap(items, pt)
+    boxes = snap(items, pt, scan=path.suffix.lower() != ".pdf")
     return lambda f: boxes.get(id(f))
 
 

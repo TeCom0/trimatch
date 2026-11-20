@@ -77,3 +77,10 @@ Format: date · decision · why · alternatives rejected. Newest first.
 - **Hardened XML parsing**: DOCTYPE refused, no entity resolution, no DTD, no network (XXE, billion laughs).
 - **Field.locator** records the XML element of each value; the review screen shows it on hover instead of a page box.
 
+## 2026-11-20 (local extractors)
+- **Everything installed lives on D:** (Youness's rule): Ollama, models, Tesseract, OCR models; paths in config/ocr.yaml and config/local.yaml.
+- **Default local extractor: Qwen2.5-VL 7B reading the page** (local-vlm). Test split: 97.0% fields / 75.5% documents vs 96.5% / 50.5% for RapidOCR + Qwen3 8B, and much better on stamped scans (96.5% vs 90.8%); slower (118 vs 88 s/page) but this is a back-office batch. Both gave 0 wrong drafts end to end. It is the only extractor allowed for real documents; Gemini stays for synthetic ones.
+- **OCR engine RapidOCR (PP-OCRv5 Latin, ONNX, CPU)** over Tesseract, by measured box placement on dev scans.
+- **Scans get exact highlight boxes from OCR words**, with a stricter rule than for PDF text layers (exact only near the model's own box and clearly the nearest occurrence).
+- **A document the model can't read goes to review (EXTRACTION_FAILED)**, never stops the run and never disappears.
+

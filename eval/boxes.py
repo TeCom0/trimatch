@@ -3,8 +3,9 @@
     uv run --project backend python -m eval.boxes --split dev|test|e2e
 
 For every field that has a box in the ground truth and in the prediction, compares
-Gemini's own box with the snapped box (backend/trimatch/extract/snap.py) on the split's
-clean PDFs (the only files with a text layer; scans keep Gemini's box, marked approximate).
+Gemini's own box with the snapped box (backend/trimatch/extract/snap.py): onto the PDF text
+layer for clean PDFs, onto OCR words for the degraded scans, once per OCR engine
+(--engines). Rows are reported per document kind (PDF / scan).
 Uses cached Gemini responses only: it never calls the API, and a document without a cached
 response is counted as skipped.
 
@@ -25,6 +26,7 @@ import hashlib
 import json
 import statistics
 import sys
+import time
 from datetime import date
 from pathlib import Path
 
@@ -91,33 +93,41 @@ class Tally:
         }
 
 
-def run(split: str) -> dict:
+def run(split: str, engines: list[str], limit: int | None = None) -> dict:
     manifest = load_manifest(split)
     ex, labels = GeminiExtractor(), LabelExtractor()
-    tallies = {"gemini": Tally(), "snapped": Tally()}
-    docs = skipped = 0
-    for d in manifest["documents"]:
-        if d["variant"] != "clean":
-            continue
+    methods = ["gemini"] + [f"snapped:{e}" for e in engines]
+    tallies = {(kind, m): Tally() for kind in ("pdf", "scan") for m in methods}
+    ocr_s: dict[str, list[float]] = {e: [] for e in engines}
+    docs = {"pdf": 0, "scan": 0}
+    skipped = 0
+    chosen = manifest["documents"][:limit] if limit else manifest["documents"]
+    for d in chosen:
         path = REPO_ROOT / "data" / "synthetic" / split / d["file"]
+        kind = "pdf" if path.suffix.lower() == ".pdf" else "scan"
+        if path.suffix.lower() == ".xml":
+            continue
         sha = hashlib.sha256(path.read_bytes()).hexdigest()
         if not (ex.cache_dir / f"{sha}.json").is_file():
             skipped += 1
             continue
         rdoc = RDoc.model_validate_json(ex.raw(path)["text"])
         truth = labels.extract(path).model_dump(mode="json")
-        preds = {
-            "gemini": to_document(rdoc),
-            "snapped": to_document(rdoc, snapped_boxes(rdoc, path)),
-        }
+        preds = {"gemini": to_document(rdoc)}
+        for e in engines:
+            t0 = time.perf_counter()
+            bx = snapped_boxes(rdoc, path, e)
+            if kind == "scan":
+                ocr_s[e].append(time.perf_counter() - t0)
+            preds[f"snapped:{e}"] = to_document(rdoc, bx)
         if preds["gemini"] is None:
             skipped += 1
             continue
-        docs += 1
+        docs[kind] += 1
         for name, pred in preds.items():
             for _, t, p in leaves(truth, pred.model_dump(mode="json")):
                 if t and p:
-                    tallies[name].add(t, p)
+                    tallies[kind, name].add(t, p)
     return {
         "split": split,
         "seed": SPLITS[split],
@@ -125,7 +135,10 @@ def run(split: str) -> dict:
         "skipped": skipped,
         "model": ex.model,
         "prompt_hash": ex.prompt_hash,
-        "methods": {k: v.row() for k, v in tallies.items()},
+        "ocr_seconds_median": {
+            e: round(statistics.median(v), 2) if v else None for e, v in ocr_s.items()
+        },
+        "methods": {f"{k}/{m}": v.row() for (k, m), v in tallies.items() if v.n},
     }
 
 
@@ -141,7 +154,11 @@ def report(res: dict, sha: str, dirty: bool) -> str:
         "|---|---|",
         f"| Code | `{sha}`{' (DIRTY TREE: not a reported result)' if dirty else ''} |",
         f"| Split / seed | {res['split']} / {res['seed']} |",
-        f"| Documents | {res['docs']} clean PDFs ({res['skipped']} skipped: no cached response) |",
+        (
+            f"| Documents | {res['docs']['pdf']} PDFs, {res['docs']['scan']} scans "
+            f"({res['skipped']} skipped: no cached response) |"
+        ),
+        f"| OCR time per scan (median, s) | {res['ocr_seconds_median']} |",
         f"| Model | {res['model']} |",
         f"| Prompt hash | `{res['prompt_hash']}` |",
         (f"| Command | `uv run --project backend python -m eval.boxes --split {res['split']}` |"),
@@ -161,6 +178,8 @@ def report(res: dict, sha: str, dirty: bool) -> str:
     lines += [
         "",
         (
+            "Method names: <pdf|scan>/<method>; snapped:<engine> uses the PDF text layer for "
+            "PDFs (the engine only matters for scans). "
             "Gemini boxes are always approximate. Snapped boxes are exact when the copied text was "
             "found in the PDF text layer; otherwise they are Gemini's box shifted by the page's "
             "estimated offset and marked approximate (drawn dashed in the review screen)."
@@ -173,8 +192,10 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--split", choices=SPLITS, required=True)
     ap.add_argument("--print-only", action="store_true", help="no files written (tuning)")
+    ap.add_argument("--engines", default="rapidocr,tesseract")
+    ap.add_argument("--limit", type=int, help="first N documents only (tuning)")
     args = ap.parse_args(argv)
-    res = run(args.split)
+    res = run(args.split, args.engines.split(","), args.limit)
     sha = git("rev-parse", "--short", "HEAD")
     dirty = bool(git("status", "--porcelain"))
     text = report(res, sha, dirty)

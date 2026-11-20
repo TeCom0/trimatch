@@ -136,8 +136,12 @@ def parse_exemption(s: str | None) -> str | None:
     t = parse_text(s)
     if not t:
         return None
-    m = re.search(r"(\d+)\s*-\s*([IVX]+)\s*-\s*([A-Z])\s*-\s*(\d+)\s*°", t)
-    return f"art. {m[1]}-{m[2]}-{m[3]}-{m[4]}°" if m else re.sub(r"\s*CGI\s*$", "", t)
+    # The roman part is often OCR'd as "1" or "l" ("91-1-A-10°"): only roman numerals belong there.
+    m = re.search(r"(\d+)\s*-\s*([IVX1l]+)\s*-\s*([A-Z])\s*-\s*(\d+)\s*°", t)
+    if not m:
+        return re.sub(r"\s*CGI\s*$", "", t)
+    roman = m[2].replace("1", "I").replace("l", "I")
+    return f"art. {m[1]}-{roman}-{m[3]}-{m[4]}°"
 
 
 def parse_rc(s: str | None) -> str | None:

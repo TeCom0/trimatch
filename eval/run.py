@@ -51,6 +51,30 @@ def load_manifest(split: str) -> dict:
     return json.loads(f.read_text(encoding="utf-8"))
 
 
+def stratified(manifest: dict, n: int) -> dict:
+    """n documents balanced over variants and document types, spread over the split's
+    orders (tuning subsets)."""
+    groups: dict[tuple, list] = {}
+    for d in manifest["documents"]:
+        groups.setdefault((d["variant"], d["doc_type"]), []).append(d)
+    per_group = -(-n // len(groups))  # ceil
+    picked = []
+    for key in sorted(groups):
+        g = groups[key]
+        step = max(1, len(g) // per_group)
+        picked += g[::step][:per_group]
+    picked = sorted(picked, key=lambda d: d["doc_id"])[:n]
+    return {**manifest, "documents": picked, "subset": f"stratified {len(picked)}"}
+
+
+def make_extractor(name: str, model: str | None):
+    if name == "gemini":
+        return GeminiExtractor(model=model)
+    from trimatch.extract.local import LocalVlmExtractor, OcrLlmExtractor
+
+    return {"local-vlm": LocalVlmExtractor, "local-ocr-llm": OcrLlmExtractor}[name](model=model)
+
+
 def extract_all(split: str, manifest: dict, ex: GeminiExtractor):
     labels = LabelExtractor()
     scores, latencies, tokens = [], [], []
@@ -72,7 +96,7 @@ def extract_all(split: str, manifest: dict, ex: GeminiExtractor):
     return scores, latencies, tokens
 
 
-def e2e_decisions(manifest: dict, reset: bool, split: str = "e2e") -> list[dict]:
+def e2e_decisions(manifest: dict, reset: bool, split: str = "e2e", ex=None) -> list[dict]:
     """Dry-run the pipeline on the clean set and on the degraded set, vs SPEC section 4."""
     from trimatch.odoo_adapter import OdooClient
     from trimatch.pipeline import process
@@ -114,7 +138,7 @@ def e2e_decisions(manifest: dict, reset: bool, split: str = "e2e") -> list[dict]
     )
     for label, pick in sets:
         files = [e2e_dir / d["file"] for d in manifest["documents"] if pick(d["variant"])]
-        results, _ = process(files, Routed(GeminiExtractor()), client, dry_run=True)
+        results, _ = process(files, Routed(ex or GeminiExtractor()), client, dry_run=True)
         for r in results:
             want_action, want_codes = EXPECTED[scen[r.invoice_file]]
             rows.append(
@@ -162,11 +186,13 @@ def report(
         f"| Code | `{sha}` |",
         f"| Split / seed / documents | {split} / {manifest['seed']} / {len(scores)} |",
         f"| Generator commit | `{manifest['generator_git_sha']}` |",
+        f"| Extractor | {getattr(ex, 'name', 'gemini')} |",
         f"| Model | {ex.model} (version reported: {sample.get('model_version')}) |",
+        f"| Documents used | {manifest.get('subset', 'all')} |",
         f"| Prompt hash | `{ex.prompt_hash}` |",
         f"| SDK | google-genai {version('google-genai')}, Python {platform.python_version()} |",
         f"| API calls in this run | {ex.calls} (rest from cache) |",
-        "| Cost | 0 (free tier); tokens below allow a paid estimate |",
+        "| Cost | 0 (free tier, or local on this laptop); tokens allow a paid estimate |",
         "",
         "## Overall",
         "",
@@ -267,6 +293,10 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="eval.run")
     ap.add_argument("--split", choices=sorted(SPLITS), required=True)
     ap.add_argument("--model")
+    ap.add_argument(
+        "--extractor", default="gemini", choices=["gemini", "local-vlm", "local-ocr-llm"]
+    )
+    ap.add_argument("--subset", type=int, help="stratified subset of N documents (tuning)")
     ap.add_argument("--reset-bills", action="store_true")
     ap.add_argument("--allow-dirty", action="store_true", help="debug only; report marked DIRTY")
     args = ap.parse_args(argv)
@@ -276,7 +306,9 @@ def main(argv: list[str] | None = None) -> int:
         sys.exit("git tree is dirty: commit first, so the report's sha is the code that ran")
     sha = git("rev-parse", "--short", "HEAD")
     manifest = load_manifest(args.split)
-    ex = GeminiExtractor(model=args.model)
+    ex = make_extractor(args.extractor, args.model)
+    if args.subset:
+        manifest = stratified(manifest, args.subset)
     print(f"{args.split}: {len(manifest['documents'])} documents, model {ex.model}")
     try:
         scores, lat, tok = extract_all(args.split, manifest, ex)
@@ -284,13 +316,17 @@ def main(argv: list[str] | None = None) -> int:
         print(f"STOPPED: {e}\nNo report written; re-run later, cached documents cost nothing.")
         return 2
     decisions = (
-        e2e_decisions(manifest, args.reset_bills, args.split)
+        e2e_decisions(manifest, args.reset_bills, args.split, ex)
         if args.split in ("e2e", "e2e_ubl")
         else []
     )
 
     RESULTS.mkdir(parents=True, exist_ok=True)
-    stem = f"{date.today().isoformat()}_{sha}{'-dirty' if dirty else ''}_{args.split}_{ex.model}"
+    tag = f"_subset{args.subset}" if args.subset else ""
+    model_tag = ex.model.replace(":", "-")  # ":" is not allowed in Windows file names
+    stem = (
+        f"{date.today().isoformat()}_{sha}{'-dirty' if dirty else ''}_{args.split}{tag}_{model_tag}"
+    )
     md = report(args.split, manifest, ex, scores, lat, tok, decisions, sha, dirty)
     (RESULTS / f"{stem}.md").write_text(md, encoding="utf-8")
     raw = {

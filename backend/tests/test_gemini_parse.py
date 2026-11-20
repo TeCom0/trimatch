@@ -118,3 +118,11 @@ def test_parse_rc_keeps_the_number():
 
     assert parse_rc("Casablanca 538902") == "538902"
     assert parse_rc("29874") == "29874"
+
+
+def test_exemption_roman_part_misread_as_digit_one():
+    from trimatch.extract.gemini_schema import parse_exemption
+
+    assert parse_exemption("art. 91-1-A-10° CGI") == "art. 91-I-A-10°"
+    assert parse_exemption("art. 91-l-A-6°") == "art. 91-I-A-6°"
+    assert parse_exemption("art. 91-I-A-6°") == "art. 91-I-A-6°"

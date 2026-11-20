@@ -33,6 +33,11 @@ from trimatch.pdfium_lock import PDFIUM_LOCK
 from trimatch.schema import Box
 
 MAX_DISTANCE = 0.12  # page fractions: beyond this an occurrence is not "the same value"
+# Scans (OCR words): rows tilt on rotated pages and OCR positions are coarser, but the
+# model's own boxes are good there (2026-11-19, dev: 95.8% on the value). So on a scan an
+# occurrence is taken as exact only close to the model's box and clearly the nearest one.
+SCAN_MAX_DISTANCE = 0.04
+SCAN_AMBIGUOUS_DISTANCE = 0.02
 ROW_TOLERANCE = 0.012  # page fractions: same table row if centres differ by less
 MIN_ANCHORS = 3  # anchors needed before trusting a shift estimate
 
@@ -147,8 +152,10 @@ def _dist(a: Rect, b: Rect) -> float:
     return ((a.cx - b.cx) ** 2 + (a.cy - b.cy) ** 2) ** 0.5
 
 
-def snap(items: Iterable[Item], pt: PageText | None) -> dict[object, Box]:
-    """key -> Box (page 1). Exact text-layer positions where possible, else approximate."""
+def snap(items: Iterable[Item], pt: PageText | None, scan: bool = False) -> dict[object, Box]:
+    """key -> Box (page 1). Exact text-layer positions where possible, else approximate.
+
+    `scan`: the words come from OCR, not from a PDF text layer (stricter, see above)."""
     items = [it for it in items if it.model_box is not None or it.text]
     if pt is None:
         return {it.key: _box(it.model_box, approximate=True) for it in items if it.model_box}
@@ -172,7 +179,9 @@ def snap(items: Iterable[Item], pt: PageText | None) -> dict[object, Box]:
     for it in items:
         guess = it.model_box.shifted(dx, dy) if it.model_box else None
         chosen = None
-        if len(it.found) == 1:
+        if scan:
+            chosen = _scan_choice(it.found, guess)
+        elif len(it.found) == 1:
             chosen = it.found[0]
         elif it.found:
             cands = it.found
@@ -189,6 +198,20 @@ def snap(items: Iterable[Item], pt: PageText | None) -> dict[object, Box]:
         elif guess is not None:
             out[it.key] = _box(guess, approximate=True)
     return out
+
+
+def _scan_choice(found: list[Rect], guess: Rect | None) -> Rect | None:
+    if not found:
+        return None
+    if guess is None:  # the model gave no position (text-only extractor): unique only
+        return found[0] if len(found) == 1 else None
+    ranked = sorted(found, key=lambda r: _dist(r, guess))
+    best = _dist(ranked[0], guess)
+    if len(ranked) == 1:
+        return ranked[0] if best <= SCAN_MAX_DISTANCE else None
+    second = _dist(ranked[1], guess)
+    clear = best <= SCAN_AMBIGUOUS_DISTANCE and second > 2 * best + 0.005
+    return ranked[0] if clear else None
 
 
 def _box(r: Rect, approximate: bool) -> Box:

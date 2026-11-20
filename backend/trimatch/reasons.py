@@ -119,6 +119,11 @@ REASONS: dict[str, Reason] = {
         "Compare with the bill or case named in the detail, then reject the copy.",
         fields=("number", "total_ttc", "date"),
     ),
+    "EXTRACTION_FAILED": Reason(
+        "Document could not be read",
+        "The extractor returned nothing usable (or says it is not an invoice or BL). Open "
+        "the file, then reject it or re-scan it.",
+    ),
     "UBL_INVALID": Reason(
         "E-invoice is not valid UBL 2.1",
         "The XML file fails the UBL 2.1 schema; values shown are what could be read. Ask "

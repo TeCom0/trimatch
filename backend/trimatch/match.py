@@ -141,28 +141,32 @@ def match_order(
     pairs: list[LinePair] = []
     for i, pl in inv_pairs.items():
         ln = inv.lines[i]
-        qty, price = ln.quantity.value, ln.unit_price_ht.value
+        qty = ln.quantity.value
+        price = ln.unit_price_ht.value if ln.unit_price_ht else None
         bl_i = bl_by_po.get(pl.id)
         pairs.append(LinePair(i, pl, bl_i))
         name = pl.default_code or pl.product_name
 
+        # A value that wasn't read can't be compared: REQUIRED_PRESENT already sends the
+        # document to review, so the comparison is skipped rather than guessed.
         billable = pl.qty_received - pl.qty_invoiced
-        ok = qty <= billable + _qty_tol(pl, billable, cfg)
-        checks.append(
-            Check(
-                "QTY_EXCEEDS_RECEIVED",
-                ok,
-                ""
-                if ok
-                else f"{name}: invoiced {qty} {pl.uom}, received {pl.qty_received}, "
-                f"already billed {pl.qty_invoiced}",
-                "invoice",
-                i,
+        if qty is not None:
+            ok = qty <= billable + _qty_tol(pl, billable, cfg)
+            checks.append(
+                Check(
+                    "QTY_EXCEEDS_RECEIVED",
+                    ok,
+                    ""
+                    if ok
+                    else f"{name}: invoiced {qty} {pl.uom}, received {pl.qty_received}, "
+                    f"already billed {pl.qty_invoiced}",
+                    "invoice",
+                    i,
+                )
             )
-        )
 
-        if bl and bl_i is not None:
-            bl_qty = bl.lines[bl_i].quantity.value
+        bl_qty = bl.lines[bl_i].quantity.value if bl and bl_i is not None else None
+        if bl_qty is not None:
             ok = abs(bl_qty - pl.qty_received) <= _qty_tol(pl, pl.qty_received, cfg)
             checks.append(
                 Check(
@@ -176,6 +180,8 @@ def match_order(
                 )
             )
 
+        if price is None:
+            continue
         if pl.price_unit:
             diff_pct = abs(price - pl.price_unit) / pl.price_unit * 100
             ok = diff_pct <= cfg.price_tolerance_pct

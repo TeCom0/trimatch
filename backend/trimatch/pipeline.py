@@ -29,6 +29,7 @@ TOL = Decimal("0.01")
 class Extracted:
     path: Path
     doc: DeliveryNote | Invoice
+    error: str | None = None  # extraction failed: doc is an empty invoice, case to review
 
 
 @dataclass
@@ -272,7 +273,10 @@ def process_group(
     known += odoo_known(client, partner_id, inv)
     if prior is not None:
         known += prior(inv)
-    ev = evaluate(inv, bl, po, refs, cfg, known, file_checks(inv_x.path))
+    extra = file_checks(inv_x.path)
+    if inv_x.error:
+        extra.append(Check("EXTRACTION_FAILED", False, inv_x.error, "invoice"))
+    ev = evaluate(inv, bl, po, refs, cfg, known, extra)
     res.decision = ev.decision
 
     if res.decision.action == "draft" and not dry_run:
@@ -300,8 +304,7 @@ def process(
     cfg = load_config()
     workers = getattr(extractor, "max_workers", 1)
     with ThreadPoolExecutor(max_workers=workers) as pool:  # order kept; rate limit in extractor
-        docs = list(pool.map(extractor.extract, paths))
-    items = [Extracted(p, d) for p, d in zip(paths, docs, strict=True)]
+        items = list(pool.map(lambda p: _safe_extract(extractor, p), paths))
     groups, lone_bls = group(items)
     # Oldest invoice first, so that of two copies the later one is the suspected duplicate.
     groups.sort(key=lambda g: (g[0].doc.date.value or date.max, g[0].path.name))
@@ -332,6 +335,18 @@ def odoo_known(client: OdooClient, partner_id: int | None, inv: Invoice) -> list
         )
         for b in client.bills_like(partner_id, inv.date.value, inv.total_ttc.value)
     ]
+
+
+def _safe_extract(extractor: Extractor, path: Path) -> Extracted:
+    """A file the extractor can't read becomes an empty invoice with the reason, so it
+    reaches a person (EXTRACTION_FAILED) instead of stopping the run or vanishing."""
+    from trimatch.extract.gemini import NotADocument
+    from trimatch.extract.ubl import parse_invoice
+
+    try:
+        return Extracted(path, extractor.extract(path))
+    except NotADocument as exc:
+        return Extracted(path, parse_invoice(b""), error=str(exc))
 
 
 def file_checks(invoice_file: Path) -> list[Check]:

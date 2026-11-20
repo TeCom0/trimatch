@@ -156,3 +156,38 @@ def test_stratified_subset_balances_variants_and_types():
     assert {(d["variant"], d["doc_type"]) for d in sub} == {
         (v, t) for v in ("clean", "rot", "blur") for t in ("invoice", "delivery_note")
     }
+
+
+def test_unreadable_file_goes_to_review_instead_of_stopping_the_run(tmp_path, seed, refs):
+    from pathlib import Path
+
+    from test_api import FakeOdoo
+
+    from trimatch.extract.gemini import NotADocument
+    from trimatch.pipeline import JsonReviewSink, process
+
+    class Broken:
+        name = "broken"
+
+        def extract(self, path: Path):
+            raise NotADocument(f"{path.name}: no valid JSON after 2 tries")
+
+    results, _ = process(
+        [Path("a.pdf")], Broken(), FakeOdoo(seed, refs), review_sink=JsonReviewSink(tmp_path)
+    )
+    [r] = results
+    assert r.decision.action == "review" and "EXTRACTION_FAILED" in r.decision.codes
+    assert "no valid JSON" in next(
+        c.detail for c in r.decision.reasons if c.code == "EXTRACTION_FAILED"
+    )
+    assert list(tmp_path.glob("*.json"))  # a case for a person
+
+
+def test_retry_room_doubles_the_output_budget():
+    from trimatch.extract.local import _is_json, _more_room
+
+    assert _more_room({"num_predict": 4096, "num_ctx": 8192}) == {
+        "num_predict": 8192,
+        "num_ctx": 12288,
+    }
+    assert _is_json('{"a": 1}') and not _is_json('{"a": ')

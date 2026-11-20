@@ -38,6 +38,23 @@ OCR_PREAMBLE = (Path(__file__).parent / "prompt_ocr_fr.md").read_text(encoding="
 VLM_RULES = (Path(__file__).parent / "prompt_vlm_fr.md").read_text(encoding="utf-8")
 
 
+class ExtractionFailed(NotADocument):
+    """The model gave no usable answer for this file (counted as all fields wrong)."""
+
+
+def _is_json(text: str) -> bool:
+    try:
+        json.loads(text)
+    except ValueError:
+        return False
+    return True
+
+
+def _more_room(options: dict) -> dict:
+    n = options.get("num_predict", 4096) * 2
+    return {**options, "num_predict": n, "num_ctx": max(options.get("num_ctx", 8192), n + 4096)}
+
+
 def load_local_config() -> dict:
     return yaml.safe_load((CONFIG_DIR / "local.yaml").read_text(encoding="utf-8"))
 
@@ -129,20 +146,29 @@ class _OllamaExtractor:
         t0 = time.perf_counter()
         messages = self._messages(path)
         prep = time.perf_counter() - t0
-        body = {
-            "model": self.model,
-            "messages": messages,
-            "format": self.schema(),
-            "stream": False,
-            "think": False,
-            "options": self.options,
-        }
         t1 = time.perf_counter()
-        resp = httpx.post(f"{self.url}/api/chat", json=body, timeout=900)
-        resp.raise_for_status()
-        out = resp.json()
-        with self._lock:
-            self.calls += 1
+        out, attempts, failed = {}, 0, True
+        # A small model sometimes loops until the token limit and leaves the JSON cut off.
+        # Retry once with more room; if it still isn't valid JSON, record a failure (cached,
+        # so a rerun doesn't loop) and let extract() raise ExtractionFailed.
+        for options in (self.options, _more_room(self.options)):
+            attempts += 1
+            body = {
+                "model": self.model,
+                "messages": messages,
+                "format": self.schema(),
+                "stream": False,
+                "think": False,
+                "options": options,
+            }
+            resp = httpx.post(f"{self.url}/api/chat", json=body, timeout=1800)
+            resp.raise_for_status()
+            out = resp.json()
+            with self._lock:
+                self.calls += 1
+            if out.get("done_reason") != "length" and _is_json(out["message"]["content"]):
+                failed = False
+                break
         record = {
             "file": str(path.resolve().relative_to(REPO_ROOT).as_posix())
             if path.resolve().is_relative_to(REPO_ROOT)
@@ -153,6 +179,8 @@ class _OllamaExtractor:
             "prompt_hash": self.prompt_hash,
             "latency_s": round(prep + time.perf_counter() - t1, 2),
             "prep_s": round(prep, 2),
+            "attempts": attempts,
+            "failed": failed,
             "usage": {
                 "prompt_tokens": out.get("prompt_eval_count"),
                 "output_tokens": out.get("eval_count"),
@@ -166,7 +194,10 @@ class _OllamaExtractor:
         return record
 
     def extract(self, path: Path) -> DeliveryNote | Invoice:
-        rdoc = self.parse(self.raw(path)["text"])
+        record = self.raw(path)
+        if record.get("failed"):
+            raise ExtractionFailed(f"{path.name}: no valid JSON after {record['attempts']} tries")
+        rdoc = self.parse(record["text"])
         doc = to_document(rdoc, snapped_boxes(rdoc, path))
         if doc is None:
             raise NotADocument(f"{path.name}: the model says this is neither an invoice nor a BL")

@@ -1,0 +1,1810 @@
+{
+ "split": "test",
+ "sha": "3b632f9",
+ "dirty": false,
+ "model": "qwen2.5vl:7b",
+ "prompt_hash": "ae9cff01a672",
+ "documents": [
+  {
+   "doc_id": "test_0000_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 25,
+   "fields_total": 30,
+   "lines_right": 0,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0000_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 30,
+   "lines_right": 2,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0000_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0000_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 25,
+   "fields_total": 30,
+   "lines_right": 0,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0000_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 29,
+   "fields_total": 30,
+   "lines_right": 4,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0000_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 48,
+   "fields_total": 58,
+   "lines_right": 0,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0000_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 58,
+   "fields_total": 58,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0000_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 58,
+   "fields_total": 58,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0000_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 58,
+   "fields_total": 58,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0000_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 58,
+   "fields_total": 58,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0001_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 25,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0001_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0001_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0001_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0001_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0001_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0001_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0001_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0001_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0001_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0002_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0002_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 29,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0002_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0002_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0002_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0002_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 57,
+   "fields_total": 57,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0002_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 57,
+   "fields_total": 57,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0002_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 57,
+   "fields_total": 57,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0002_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 57,
+   "fields_total": 57,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0002_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 57,
+   "fields_total": 57,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0003_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0003_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0003_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0003_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0003_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0003_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0003_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0003_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0003_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0003_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0004_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0004_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0004_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0004_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 25,
+   "fields_total": 26,
+   "lines_right": 3,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0004_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0004_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 49,
+   "fields_total": 49,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0004_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 49,
+   "fields_total": 49,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0004_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 49,
+   "fields_total": 49,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0004_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 49,
+   "fields_total": 49,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0004_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 49,
+   "fields_total": 49,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0005_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0005_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0005_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0005_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0005_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0005_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 42,
+   "fields_total": 42,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0005_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 41,
+   "fields_total": 42,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0005_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 41,
+   "fields_total": 42,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0005_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 42,
+   "fields_total": 42,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0005_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 42,
+   "fields_total": 42,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0006_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 29,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0006_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0006_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0006_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0006_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0006_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 58,
+   "fields_total": 58,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0006_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 57,
+   "fields_total": 58,
+   "lines_right": 4,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0006_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 58,
+   "fields_total": 58,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0006_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 58,
+   "fields_total": 58,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0006_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 58,
+   "fields_total": 58,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0007_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0007_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 21,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0007_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0007_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0007_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 21,
+   "fields_total": 22,
+   "lines_right": 2,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0007_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 42,
+   "fields_total": 42,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0007_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 41,
+   "fields_total": 42,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0007_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 42,
+   "fields_total": 42,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0007_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 42,
+   "fields_total": 42,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0007_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 42,
+   "fields_total": 42,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0008_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 18,
+   "fields_total": 18,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0008_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 18,
+   "fields_total": 18,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0008_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 18,
+   "fields_total": 18,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0008_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 18,
+   "fields_total": 18,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0008_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 18,
+   "fields_total": 18,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0008_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 32,
+   "fields_total": 32,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0008_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 32,
+   "fields_total": 32,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0008_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 32,
+   "fields_total": 32,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0008_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 32,
+   "fields_total": 32,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0008_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 32,
+   "fields_total": 32,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0009_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 18,
+   "fields_total": 26,
+   "lines_right": 0,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0009_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0009_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0009_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 26,
+   "lines_right": 0,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0009_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0009_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0009_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 42,
+   "fields_total": 50,
+   "lines_right": 0,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0009_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 49,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0009_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0009_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0010_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0010_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0010_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0010_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0010_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0010_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0010_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0010_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0010_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0010_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0011_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0011_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 29,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0011_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0011_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0011_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0011_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0011_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0011_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0011_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0011_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0012_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0012_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0012_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0012_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0012_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0012_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 44,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0012_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0012_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 44,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0012_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 44,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0012_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 44,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0013_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0013_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0013_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0013_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0013_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0013_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 38,
+   "fields_total": 39,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0013_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 39,
+   "fields_total": 39,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0013_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 39,
+   "fields_total": 39,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0013_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 39,
+   "fields_total": 39,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0013_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 39,
+   "fields_total": 39,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0014_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 19,
+   "fields_total": 22,
+   "lines_right": 0,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0014_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0014_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 19,
+   "fields_total": 22,
+   "lines_right": 0,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0014_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 16,
+   "fields_total": 22,
+   "lines_right": 0,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0014_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 22,
+   "lines_right": 3,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0014_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 36,
+   "fields_total": 42,
+   "lines_right": 0,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0014_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 36,
+   "fields_total": 42,
+   "lines_right": 0,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0014_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 36,
+   "fields_total": 42,
+   "lines_right": 0,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0014_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 36,
+   "fields_total": 42,
+   "lines_right": 0,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0014_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 36,
+   "fields_total": 42,
+   "lines_right": 0,
+   "lines_total": 3
+  },
+  {
+   "doc_id": "test_0015_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 18,
+   "fields_total": 26,
+   "lines_right": 0,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0015_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0015_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 22,
+   "fields_total": 26,
+   "lines_right": 0,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0015_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 18,
+   "fields_total": 26,
+   "lines_right": 0,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0015_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 26,
+   "fields_total": 26,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0015_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 42,
+   "fields_total": 50,
+   "lines_right": 0,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0015_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 26,
+   "fields_total": 50,
+   "lines_right": 0,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0015_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 42,
+   "fields_total": 50,
+   "lines_right": 0,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0015_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 42,
+   "fields_total": 50,
+   "lines_right": 0,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0015_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 50,
+   "lines_right": 4,
+   "lines_total": 4
+  },
+  {
+   "doc_id": "test_0016_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 18,
+   "fields_total": 18,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0016_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 17,
+   "fields_total": 18,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0016_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 18,
+   "fields_total": 18,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0016_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 18,
+   "fields_total": 18,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0016_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 18,
+   "fields_total": 18,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0016_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 32,
+   "fields_total": 32,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0016_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 32,
+   "fields_total": 32,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0016_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 32,
+   "fields_total": 32,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0016_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 31,
+   "fields_total": 32,
+   "lines_right": 1,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0016_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 32,
+   "fields_total": 32,
+   "lines_right": 2,
+   "lines_total": 2
+  },
+  {
+   "doc_id": "test_0017_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0017_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0017_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0017_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0017_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0017_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 51,
+   "fields_total": 57,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0017_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 51,
+   "fields_total": 57,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0017_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 51,
+   "fields_total": 57,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0017_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 50,
+   "fields_total": 57,
+   "lines_right": 4,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0017_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 51,
+   "fields_total": 57,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0018_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0018_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0018_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0018_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0018_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0018_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0018_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0018_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0018_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 55,
+   "fields_total": 56,
+   "lines_right": 4,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0018_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 56,
+   "fields_total": 56,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0019_bl_clean",
+   "variant": "clean",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0019_bl_rot",
+   "variant": "rot",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0019_bl_blur",
+   "variant": "blur",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0019_bl_stamp",
+   "variant": "stamp",
+   "doc_type": "delivery_note",
+   "fields_right": 30,
+   "fields_total": 30,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0019_bl_handwriting",
+   "variant": "handwriting",
+   "doc_type": "delivery_note",
+   "fields_right": 29,
+   "fields_total": 30,
+   "lines_right": 4,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0019_invoice_clean",
+   "variant": "clean",
+   "doc_type": "invoice",
+   "fields_right": 58,
+   "fields_total": 58,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0019_invoice_rot",
+   "variant": "rot",
+   "doc_type": "invoice",
+   "fields_right": 58,
+   "fields_total": 58,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0019_invoice_blur",
+   "variant": "blur",
+   "doc_type": "invoice",
+   "fields_right": 58,
+   "fields_total": 58,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0019_invoice_stamp",
+   "variant": "stamp",
+   "doc_type": "invoice",
+   "fields_right": 58,
+   "fields_total": 58,
+   "lines_right": 5,
+   "lines_total": 5
+  },
+  {
+   "doc_id": "test_0019_invoice_handwriting",
+   "variant": "handwriting",
+   "doc_type": "invoice",
+   "fields_right": 58,
+   "fields_total": 58,
+   "lines_right": 5,
+   "lines_total": 5
+  }
+ ],
+ "decisions": []
+}

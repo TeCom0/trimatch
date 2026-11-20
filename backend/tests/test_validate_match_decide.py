@@ -250,3 +250,23 @@ def test_low_confidence_goes_to_review(seed, e2e, refs):
     checks = run(seed, e2e, refs, "PO-001", inv=inv)
     d = decide(checks)
     assert d.action == "review" and d.codes == ["LOW_CONFIDENCE"]
+
+
+def test_unread_values_go_to_review_without_crashing_the_match(seed, e2e, refs):
+    inv = e2e["PO-002", "invoice"]
+    lines = [ln.model_copy(deep=True) for ln in inv.lines]
+    lines[0].quantity.value = None
+    lines[1].unit_price_ht.value = None
+    bl = e2e["PO-002", "bl"]
+    bl_lines = [ln.model_copy(deep=True) for ln in bl.lines]
+    bl_lines[0].quantity.value = None
+    checks = run(
+        seed,
+        e2e,
+        refs,
+        "PO-002",
+        inv=inv.model_copy(update={"lines": lines}),
+        bl=bl.model_copy(update={"lines": bl_lines}),
+    )
+    assert "REQUIRED_PRESENT" in codes_failed(checks)
+    assert decide(checks).action == "review"
